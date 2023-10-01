@@ -1,0 +1,212 @@
+﻿@using ReadAndAnalysis.Data.Entities
+@model OilNewsDto
+@{
+    ViewData["Title"] = "نمایش خبر";
+    KeyWordsUsedInOilNewsDto? words = ViewData["Words"] as KeyWordsUsedInOilNewsDto;
+    List<NewsRelevance>? relevanes = ViewData["Relevances"] as List<NewsRelevance>;
+    List<EstimateNews>? estimates = ViewData["estimate"] as List<EstimateNews>;
+    List<FieldOfUse>? fields = ViewData["fields"] as List<FieldOfUse>;
+    List<StatisticalSource>? sources = ViewData["source"] as List<StatisticalSource>;
+    EvaluatedResult? eva = ViewData["evaluted"] as EvaluatedResult;
+    string? titleEva = ViewData["titleEva"] as string;
+}
+
+<div class="row col-12 bg-light">
+    <div class="col-8">
+        <p>
+            عنوان خبر : @Model.Title
+        </p>
+    </div>
+    <div class="col-4">
+        <a href="@Model.LinkUrl" class="btn btn-primary" target="_blank">رفتن به صفحه خبر</a>
+    </div>
+    <div class="col-12">
+        @Model.Description
+    </div>
+</div>
+<div class="alert-info">
+
+    <h4>کلمات کلیدی اصلی استفاده شده</h4>
+    @foreach (var item in words.MainKeys)
+    {
+        <span>@item - </span>
+    }
+</div>
+<div class="alert-warning">
+    <h4>کلمات کلیدی</h4>
+    @foreach (var item in words.SecondStepKeys)
+    {
+        <span>@item - </span>
+    }
+</div>
+@if (!ViewBag.IsEvaluated)
+{
+    <form asp-action="Show" method="post">
+        <input type="hidden" name="newsId" value="@Model.Id" />
+        <div class="col-12 row mb-2">
+            <div class="col-6 row">
+                <div class="col-6"><label>حوزه مورد استفاده گزارش و خبر</label></div>
+                <div class="col-6">
+                    <select class="form-control form-select" name="fieldParent" id="parentField" onchange="ChangeParent()" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in fields.Where(f => f.ParentId == null))
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 row">
+                <div class="col-6"><label>انتخاب حوزه</label></div>
+                <div class="col-6">
+                    <div id="shownChild">
+                        <select class="form-control">
+                            <option value="">انتخاب کنید</option>
+
+                        </select>
+                    </div>
+                    <div id="child"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row mb-2">
+            <div class="col-6 row">
+                <div class="col-6">
+                    <label>مرتبط بودن خبر</label>
+                </div>
+                <div class="col-6">
+                    <select class="form-control form-select" name="relevance" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in relevanes)
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 row">
+                <div class="col-6">
+                    <label>ماخذ آماری (گزارشات آماری )</label>
+                </div>
+                <div class="col-6">
+                    <select class="form-control form-select" name="source" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in sources)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row mb-2">
+            <div class="col-6 row">
+                <div class="col-6">
+                    <label>نتیجه کلی خبر</label>
+                </div>
+                <div class="col-6">
+                    <select class="form-control form-select" name="estimate" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in estimates)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 col-12">
+            <div class="col-4 offset-4 d-grid gap-2">
+                <input type="submit" class="btn btn-success " value="ثبت" />
+            </div>
+        </div>
+    </form>
+}
+else
+{
+    <div class="col-12 row ">
+        <h2>ارزیابی برای این خبر صورت گرفته</h2>
+        <div class="col-12 bg-info">
+            <div class="col-12 row mb-2">
+                <div class="col-12 row">
+                    <div class="col-3"><label>حوزه مورد استفاده گزارش و خبر</label></div>
+                    <div class="col-9">
+                        <input class="form-control" value="@titleEva" readonly />
+                    </div>
+                </div>
+              
+            </div>
+            <div class="col-12 row mb-2">
+                <div class="col-6 row">
+                    <div class="col-6">
+                        <label>ماخذ آماری (گزارشات آماری )</label>
+                    </div>
+                    <div class="col-6">
+                        <div>
+                            <input class="form-control" value="@eva.StatisticalSource.Name" readonly />
+                        </div>
+                    </div>
+                    <div id="child"></div>
+                </div>
+                <div class="col-6 row">
+                    <div class="col-6">
+                        <label>نتیجه کلی خبر</label>
+                    </div>
+                    <div class="col-6">
+                        <input class="form-control " value="@eva.Estimate.Name" readonly />
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <a class="btn btn-danger" onclick="Delete(@Model.Id)">حذف ارزیابی</a>
+    </div>  
+
+}
+
+
+<div id="modal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="title">نمونه مودال عمومی</h4>
+            </div><!-- /.modal-header -->
+            <div class="modal-body" id="body">
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+            </div><!-- /.modal-body -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section Script{
+    <script>
+        function ChangeParent() {
+            $("#shownChild").hide();
+            var id = $("#parentField").val();
+            console.log(id);
+            $("#child").load("/News/GetFieldOfUse", { parent: id });
+        }
+
+
+    </script>
+    <script>
+        function Delete(id) {
+            $.ajax({
+                url: "/News/DeleteEvaluted",
+                type: "Get",
+                data: { newsId: id }
+            }).done(function (result) {
+                $('#modal').modal('show');
+                $('#title').html(' حذف ارزیابی ...');
+                $('#body').html(result);
+            });
+        }
+    </script>
+}

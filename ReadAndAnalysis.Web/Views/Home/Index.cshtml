@@ -1,0 +1,622 @@
+﻿@using ReadAndAnalysis.App.Extensions;
+@using ReadAndAnalysis.App.Helpers;
+@using ReadAndAnalysis.Data.Entities;
+
+@{
+    Layout = null;
+    List<TestSpDto>? sps = ViewData["TestSp"] as List<TestSpDto>;
+    List<int> oilSps = sps.Select(s => s.OilNewsCount).ToList();
+    int maxSp = oilSps.Max();
+    List<int> notoilSps = sps.Select(s => s.NotOilNewsCount).ToList();
+    int maxNotSp = notoilSps.Max();
+    List<NewsRelevance>? relevanes = ViewData["Relevances"] as List<NewsRelevance>;
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="refresh" content="300">
+    <title>داشبورد</title>
+    <!-- core:css -->
+    <!-- BEGIN CSS -->
+    <link href="/assets/plugins/bootstrap/bootstrap5/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="/assets/plugins/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="/assets/plugins/simple-line-icons/css/simple-line-icons.min.css" rel="stylesheet">
+    <link href="/assets/plugins/font-awesome/css/all.min.css" rel="stylesheet">
+    <link href="/assets/plugins/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" rel="stylesheet">
+    <link href="/assets/plugins/switchery/dist/switchery.min.css" rel="stylesheet">
+    <link href="/assets/plugins/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="/assets/plugins/paper-ripple/dist/paper-ripple.min.css" rel="stylesheet">
+    <link href="/assets/plugins/iCheck/skins/square/_all.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/colors.css" rel="stylesheet">
+    <!-- END CSS -->
+    <!-- BEGIN PAGE CSS -->
+    <link href="/assets/plugins/morris.js/morris.css" rel="stylesheet">
+    <link href="/assets/plugins/kamadatepicker/kamadatepicker.min.css" rel="stylesheet">
+    <link href="/assets/css/effects.css" rel="stylesheet">
+    <!-- END PAGE CSS -->
+    <!-- End layout styles -->
+
+    <link rel="shortcut icon" href="/Forouzan.ico" />
+</head>
+
+<body class="active-ripple theme-blue fix-header sidebar-extra">
+    <!-- BEGIN LOEADING -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div><!-- /loader -->
+    <!-- END LOEADING -->
+    <!-- BEGIN HEADER -->
+    <div class="navbar navbar-fixed-top" id="main-navbar">
+        <div class="header-right">
+            <a href="/" class="logo-con">
+                صفحه داشبورد
+            </a>
+        </div><!-- /.header-right -->
+        <div class="header-left">
+            <div class="top-bar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" class="btn" id="toggle-sidebar">
+                            <span class="menu"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="btn open" id="toggle-sidebar-top">
+                            <i class="icon-user-following"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="btn" id="toggle-dark-mode">
+                            <i class="icon-bulb"></i>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-left">
+                    <li class="dropdown">
+                        <a href="#" class="btn" id="toggle-fullscreen">
+                            <i class="icon-size-fullscreen"></i>
+                        </a>
+                    </li>
+                    <li class="dropdown dropdown-user">
+                        <a href="#" class="dropdown-toggle dropdown-hover" data-bs-toggle="dropdown">
+
+                            <span>کاربر</span>
+                            <i class="icon-arrow-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+
+                            <li class="divider"></li>
+                            <li>
+                                <a asp-controller="Account" asp-action="LogOut">
+                                    <i class="icon-power"></i>
+                                    خروج
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul><!-- /.navbar-left -->
+            </div><!-- /.top-bar -->
+        </div><!-- /.header-left -->
+    </div><!-- /.navbar -->
+    <!-- END HEADER -->
+    <!-- BEGIN SIDEBAR -->
+    <div id="wrapper">
+        <div id="sidebar">
+            <div class="sidebar-top">
+                <div class="search-box">
+                    <form class="search-form" action="#" method="GET">
+                        <div class="input-group">
+                            <input type="text" class="form-control placeholder-light" placeholder="جستجو..." name="key">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-round submit">
+                                    <i class="icon-magnifier"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                @* @await Component.InvokeAsync("UserBox")*@
+            </div>
+            <partial name="_SideNav" />
+            <!-- BEGIN PAGE CONTENT -->
+            <div id="page-content">
+                <div class="row">
+                    <!-- BEGIN BREADCRUMB -->
+                    <div class="col-md-12">
+                        <div class="breadcrumb-box shadow">
+                            <ul class="breadcrumb">
+                                <li><a href="#">داشبورد</a></li>
+
+                            </ul>
+                            <div class="breadcrumb-left">
+                                @DateTime.Now.PersionDayOfWeek()، @DateTime.Now.ToShamsi()
+                                <i class="icon-calendar"></i>
+                            </div><!-- /.breadcrumb-left -->
+                        </div><!-- /.breadcrumb-box -->
+                    </div><!-- /.col-md-12 -->
+                    <!-- END BREADCRUMB -->
+
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-lg-3 col-6">
+                                <div class="stat-box use-cyan shadow">
+                                    <a asp-controller="Users" asp-action="Index">
+                                        <div class="stat">
+                                            <div class="counter-down" data-value="@ViewBag.GetUsersCount"></div>
+                                            <div class="h3">کل کاربر</div>
+                                        </div><!-- /.stat -->
+                                        <div class="visual">
+                                            <i class="icon-people"></i>
+                                        </div><!-- /.visual -->
+                                    </a>
+                                </div><!-- /.stat-box -->
+                            </div><!-- /.col-lg-3 -->
+                            <div class="col-lg-3 col-6">
+                                <div class="stat-box use-blue shadow">
+                                    <a href="#">
+                                        <div class="stat">
+                                            <div class="counter-down" data-value="@(ViewBag.Count)"></div>
+                                            <div class="h3">کل اخبار  سایت ها</div>
+                                        </div><!-- /.stat -->
+                                        <div class="visual">
+                                            <i class="icon-present"></i>
+                                        </div><!-- /.visual -->
+                                    </a>
+                                </div><!-- /.stat-box -->
+                            </div><!-- /.col-lg-3 -->
+                            <div class="col-lg-3 col-6">
+                                <div class="stat-box use-green shadow">
+                                    <a asp-controller="News" asp-action="ShowOilNews">
+                                        <div class="stat">
+                                            <div class="counter-down" data-value="@ViewBag.GetOurNewsCount"></div>
+                                            <div class="h3">کل اخبار مرتبط با نفت</div>
+                                        </div><!-- /.stat -->
+                                        <div class="visual">
+                                            <i class="icon-diamond"></i>
+                                        </div><!-- /.visual -->
+                                    </a>
+                                </div><!-- /.stat-box -->
+                            </div><!-- /.col-lg-3 -->
+                            <div class="col-lg-3 col-6">
+                                <div class="stat-box use-red shadow">
+                                    <a asp-controller="News" asp-action="ShowEvaluteds">
+                                        <div class="stat">
+                                            <div class="counter-down" data-value="@ViewBag.GetProcessedNewsCount"></div>
+                                            <div class="h3">کل اخبار تحلیل و بررسی شده</div>
+                                        </div><!-- /.stat -->
+                                        <div class="visual">
+                                            <i class="icon-bubbles"></i>
+                                        </div><!-- /.visual -->
+                                    </a>
+                                </div><!-- /.stat-box -->
+                            </div><!-- /.col-lg-3 -->
+                        </div><!-- /.row -->
+                        @if (ViewBag.IsBoss)
+                        {
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-lg-3 col-6">
+                                        <div class="stat-box use-cyan shadow">
+                                            <a href="#">
+                                                <div class="stat">
+                                                    <div class="counter-down" data-value="@ViewBag.Posetive"></div>
+                                                    <div class="h3">خبرهای مثبت</div>
+                                                </div><!-- /.stat -->
+                                                <div class="visual">
+                                                    <i class="icon-arrow-up"></i>
+                                                </div><!-- /.visual -->
+                                            </a>
+                                        </div><!-- /.stat-box -->
+                                    </div><!-- /.col-lg-3 -->
+                                    <div class="col-lg-3 col-6">
+                                        <div class="stat-box use-blue shadow">
+                                            <a href="#">
+                                                <div class="stat">
+                                                    <div class="counter-down" data-value="@(ViewBag.Negative)"></div>
+                                                    <div class="h3">خبرهای منفی</div>
+                                                </div><!-- /.stat -->
+                                                <div class="visual">
+                                                    <i class="icon-arrow-down"></i>
+                                                </div><!-- /.visual -->
+                                            </a>
+                                        </div><!-- /.stat-box -->
+                                    </div><!-- /.col-lg-3 -->
+                                    <div class="col-lg-3 col-6">
+                                        <div class="stat-box use-green shadow">
+                                            <a href="#">
+                                                <div class="stat">
+                                                    <div class="counter-down" data-value="@ViewBag.Neutral"></div>
+                                                    <div class="h3">خبر های خنثی</div>
+                                                </div><!-- /.stat -->
+                                                <div class="visual">
+                                                    <i class="icon-arrow-left"></i>
+                                                </div><!-- /.visual -->
+                                            </a>
+                                        </div><!-- /.stat-box -->
+                                    </div><!-- /.col-lg-3 -->
+                                    <div class="col-lg-3 col-6">
+                                        <div class="stat-box use-red shadow">
+                                            <a href="#">
+                                                <div class="stat">
+                                                    <div class="counter-down" data-value="@ViewBag.Relevance"></div>
+                                                    <div class="h3">خبرهای در رابطه با @ViewBag.RelevanceTitle</div>
+                                                </div><!-- /.stat -->
+                                                <div class="visual">
+                                                    <i class=""></i>
+                                                </div><!-- /.visual -->
+                                            </a>
+                                        </div><!-- /.stat-box -->
+                                    </div><!-- /.col-lg-3 -->
+                                </div><!-- /.row -->
+                            </div>
+                            <div class="col-12 row card-body shadow rounded mb-4">
+                                <form asp-action="Index" method="get">
+                                    <div class="row">
+                                        <div class="col-6 col-lg-3 mb-md-2 row">
+                                            <div class="col-4 col-lg-3">
+                                                <label>تاریخ شروع</label>
+                                            </div>
+                                            <div class="col-8 col-lg-9">
+                                                <input type="text" name="start" autocomplete="off" id="start"
+                                                       class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-lg-3 mb-md-2 row">
+                                            <div class="col-4 col-lg-3">
+                                                <label>تاریخ پایان</label>
+                                            </div>
+                                            <div class="col-8 col-lg-9">
+                                                <input type="text" name="end" autocomplete="off" id="end"
+                                                       class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-lg-3 mb-md-2 row">
+                                            <div class="col-4 col-lg-3">
+                                                <label>در رابطه با</label>
+                                            </div>
+                                            <div class="col-8 col-lg-9">
+                                                <select name="relevanceId" class="form-select form-control">
+                                                    @foreach (var item in relevanes)
+                                                    {
+                                                        <option value="@item.Id">@item.Title</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 col-lg-1 mb-md-2 row">
+                                            <input type="submit" class="btn btn-primary" value="بگرد" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        }
+
+                        <div class="col-12">
+                            <div class="portlet box shadow">
+                                <div class="portlet-heading">
+                                    <div class="portlet-title">
+                                        <h3 class="title">
+                                            <i class="icon-note"></i>
+                                            نمودار اخبار
+                                        </h3>
+                                    </div><!-- /.portlet-title -->
+                                    <div class="buttons-box">
+                                        <a class="btn btn-sm btn-default btn-round btn-fullscreen" rel="tooltip" title="تمام صفحه" href="#">
+                                            <i class="icon-size-fullscreen"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-default btn-round btn-collapse" rel="tooltip" title="کوچک کردن" href="#">
+                                            <i class="icon-arrow-up"></i>
+                                        </a>
+                                    </div><!-- /.buttons-box -->
+                                </div><!-- /.portlet-heading -->
+                                <div class="portlet-body">
+                                    <div class="col-12">
+                                        <canvas id="line1" class="min-height-300"></canvas>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <canvas id="line2" class="min-height-300"></canvas>
+                                    </div>
+                                    <div id="donut2" class="morris-chart"></div>
+
+                                </div><!-- /.portlet-body -->
+                            </div><!-- /.portlet -->
+
+                        </div><!-- /.col-12 -->
+
+
+                    </div><!-- /.row -->
+
+                </div><!-- /#page-content -->
+                <!-- END PAGE CONTENT -->
+
+            </div><!-- /#wrapper -->
+            <!-- END WRAPPER -->
+
+            <div class="row footer-container">
+                <div class="col-md-12">
+                    <div class="copyright">
+                        <p class="float-start">
+                            کلیه حقوق این سایت متعلق به شرکت فنی ، مهندسی ، نرم افزاری فروزان می باشد.
+                        </p>
+
+                    </div><!-- /.copyright -->
+                </div><!-- /.col-md-12 -->
+            </div><!-- /.row -->
+            <!-- BEGIN SETTING -->
+            <div class="settings d-none d-sm-block">
+                <a href="#" class="btn" id="toggle-setting">
+                    <i class="icon-settings"></i>
+                </a>
+
+                <div class="setting-content">
+                    <h3 class="text-center">تنظیمات</h3>
+                    <div class="fix-header-box">
+                        <p class="h6">
+                            هدر ثابت:
+                            <span class="pull-left">
+                                <input type="checkbox" class="fix-header-switch normal" checked>
+                            </span>
+                        </p>
+                    </div><!-- /.fix-header-box -->
+                    <hr class="light">
+                    <div class="toggle-sidebar-box">
+                        <p class="h6">
+                            جمع کردن سایدبار:
+                            <span class="pull-left">
+                                <input type="checkbox" class="toggle-sidebar-switch normal">
+                            </span>
+                        </p>
+                    </div><!-- /.toggle-sidebar-box -->
+                    <hr class="light">
+                    <div class="toggle-sidebar-box">
+                        <p class="h6">
+                            سایدبار خلاقانه:
+                            <span class="pull-left">
+                                <input type="checkbox" class="creative-sidebar-switch normal">
+                            </span>
+                        </p>
+                    </div><!-- /.toggle-sidebar-box -->
+                    <hr class="light">
+                    <div class="theme-colors">
+                        <p class="h6">رنگ قالب : </p>
+                        <a class="btn btn-round btn-blue ripple-effect active" data-color="blue"></a>
+                        <a class="btn btn-round btn-red ripple-effect" data-color="red"></a>
+                        <a class="btn btn-round btn-green ripple-effect" data-color="green"></a>
+                        <a class="btn btn-round btn-orange ripple-effect" data-color="orange"></a>
+                        <a class="btn btn-round btn-purple ripple-effect" data-color="purple"></a>
+                        <a class="btn btn-round btn-deeporange ripple-effect" data-color="deeporange"></a>
+                        <a class="btn btn-round btn-cyan ripple-effect" data-color="cyan"></a>
+                        <a class="btn btn-round btn-rose ripple-effect" data-color="rose"></a>
+                        <a class="btn btn-round btn-lime ripple-effect" data-color="lime"></a>
+                        <a class="btn btn-round btn-darkorange ripple-effect" data-color="darkorange"></a>
+                        <a class="btn btn-round btn-darkpurple ripple-effect" data-color="darkpurple"></a>
+                        <a class="btn btn-round btn-darkblue ripple-effect" data-color="darkblue"></a>
+                    </div><!-- /.theme-colors -->
+                    @* <div class="theme-code ltr text-left">
+                    <code></code>
+                    </div>*@<!-- /.theme-code -->
+                </div><!-- /.setting-content -->
+
+
+                <div class="img-box">
+                    <img class="img-bottom dark" src="/assets/images/logo-dark.png">
+                    <img class="img-bottom light" src="/assets/images/logo.png">
+                </div><!-- /.img-box -->
+            </div><!-- /.settings -->
+            <!-- END SETTING -->
+
+        </div>
+        <!-- BEGIN JS -->
+        <script src="/assets/plugins/jquery/dist/jquery-3.6.1.min.js"></script>
+        <script src="/assets/plugins/bootstrap/bootstrap5/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/plugins/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="/assets/plugins/paper-ripple/dist/PaperRipple.min.js"></script>
+        <script src="/assets/plugins/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="/assets/plugins/sweetalert2/dist/sweetalert2.min.js"></script>
+        <script src="/assets/plugins/screenfull/dist/screenfull.min.js"></script>
+        <script src="/assets/plugins/iCheck/icheck.min.js"></script>
+        <script src="/assets/plugins/switchery/dist/switchery.js"></script>
+        <script src="/assets/js/core.js"></script>
+
+        <!-- BEGIN PAGE JAVASCRIPT -->
+        <script src="/assets/plugins/raphael/raphael.min.js"></script>
+        <script src="/assets/plugins/morris.js/morris.min.js"></script>
+        <script src="/assets/plugins/jquery-incremental-counter/jquery.incremental-counter.min.js"></script>
+        <script src="/assets/plugins/ammap3/ammap/ammap.js"></script>
+        <script src="/assets/plugins/ammap3/ammap/maps/js/iranHighFa.js"></script>
+        <script src="/assets/plugins/kamadatepicker/kamadatepicker.min.js"></script>
+        <script src="/assets/plugins/jquery-knob/dist/jquery.knob.min.js"></script>
+        <script src="/assets/js/pages/dashboard1.js"></script>
+        <script src="/assets/plugins/chart.js/dist/Chart.bundle.min.js"></script>
+        <script src="/assets/js/pages/bar-chart.js"></script>
+        <partial name="_Notification" />
+        <script>
+            kamaDatepicker('start',
+                {
+                    buttonsColor: "green",
+                    forceFarsiDigits: false,
+                    markToday: true,
+                    markHolidays: true,
+                    gotoToday: true
+                });
+        </script>
+        <script>
+            kamaDatepicker('end',
+                {
+                    buttonsColor: "green",
+                    forceFarsiDigits: false,
+                    markToday: true,
+                    markHolidays: true,
+                    gotoToday: true
+                });
+        </script>
+        <script>
+
+            Morris.Donut({
+                element: 'donut2',
+                data: [
+                    { value: @ViewBag.Count, label: 'کل اخبار', formatted: '@ViewBag.Count خبر' },
+                    { value: @ViewBag.GetOurNewsCount, label: 'اخبار مرتبط با ما', formatted: '@ViewBag.GetOurNewsCount خبر' },
+                    { value: @ViewBag.GetProcessedNewsCount, label: 'اخبار بررسی شده', formatted: '@ViewBag.GetProcessedNewsCount خبر' },
+
+                ],
+                colors: [
+                    '#ffbd15',
+                    '#f55145',
+                    '#13a2a6'
+
+                ],
+                formatter: function (x, data) { return data.formatted; },
+                resize: true
+            });
+        </script>
+
+        <script>
+            Chart.defaults.global.defaultFontFamily = "IranSans";
+
+            var NotOilNews = ["@(sps[0].NotOilNewsCount)", "@(sps[1].NotOilNewsCount)", "@(sps[2].NotOilNewsCount)", "@(sps[3].NotOilNewsCount)",
+                "@(sps[4].NotOilNewsCount)", "@(sps[5].NotOilNewsCount)", "@(sps[6].NotOilNewsCount)", "@(sps[7].NotOilNewsCount)",
+                "@(sps[8].NotOilNewsCount)", "@(sps[9].NotOilNewsCount)", "@(sps[10].NotOilNewsCount)", "@(sps[11].NotOilNewsCount)",
+                "@(sps[12].NotOilNewsCount)", "@(sps[13].NotOilNewsCount)", "@(sps[14].NotOilNewsCount)", "@(sps[15].NotOilNewsCount)",
+                "@(sps[16].NotOilNewsCount)", "@(sps[17].NotOilNewsCount)", "@(sps[18].NotOilNewsCount)", "@(sps[19].NotOilNewsCount)",
+                "@(sps[20].NotOilNewsCount)", "@(sps[21].NotOilNewsCount)", "@(sps[22].NotOilNewsCount)", "@(sps[23].NotOilNewsCount)",
+                "@(sps[24].NotOilNewsCount)", "@(sps[25].NotOilNewsCount)", "@(sps[26].NotOilNewsCount)", "@(sps[27].NotOilNewsCount)",
+                "@(sps[28].NotOilNewsCount)", "@(sps[29].NotOilNewsCount)", "@(sps[30].NotOilNewsCount)", "@(sps[31].NotOilNewsCount)",
+                "@(sps[32].NotOilNewsCount)", "@(sps[33].NotOilNewsCount)", "@(sps[34].NotOilNewsCount)", "@(sps[35].NotOilNewsCount)"
+            ];
+            var ChartLabels = ["@(sps[0].ShownDate)", "@(sps[1].ShownDate)", "@(sps[2].ShownDate)", "@(sps[3].ShownDate)",
+                "@(sps[4].ShownDate)", "@(sps[5].ShownDate)", "@(sps[6].ShownDate)", "@(sps[7].ShownDate)",
+                "@(sps[8].ShownDate)", "@(sps[9].ShownDate)", "@(sps[10].ShownDate)", "@(sps[11].ShownDate)",
+                "@(sps[12].ShownDate)", "@(sps[13].ShownDate)", "@(sps[14].ShownDate)", "@(sps[15].ShownDate)",
+                "@(sps[16].ShownDate)", "@(sps[17].ShownDate)", "@(sps[18].ShownDate)", "@(sps[19].ShownDate)",
+                "@(sps[20].ShownDate)", "@(sps[21].ShownDate)", "@(sps[22].ShownDate)", "@(sps[23].ShownDate)",
+                "@(sps[24].ShownDate)", "@(sps[25].ShownDate)", "@(sps[26].ShownDate)", "@(sps[27].ShownDate)",
+                "@(sps[28].ShownDate)", "@(sps[29].ShownDate)", "@(sps[30].ShownDate)", "@(sps[31].ShownDate)",
+                "@(sps[32].ShownDate)", "@(sps[33].ShownDate)", "@(sps[34].ShownDate)", "@(sps[35].ShownDate)"
+            ];
+            var oilNews = ["@(sps[0].OilNewsCount)", "@(sps[1].OilNewsCount)", "@(sps[2].OilNewsCount)", "@(sps[3].OilNewsCount)",
+                "@(sps[4].OilNewsCount)", "@(sps[5].OilNewsCount)", "@(sps[6].OilNewsCount)", "@(sps[7].OilNewsCount)",
+                "@(sps[8].OilNewsCount)", "@(sps[9].OilNewsCount)", "@(sps[10].OilNewsCount)", "@(sps[11].OilNewsCount)",
+                "@(sps[12].OilNewsCount)", "@(sps[13].OilNewsCount)", "@(sps[14].OilNewsCount)", "@(sps[15].OilNewsCount)",
+                "@(sps[16].OilNewsCount)", "@(sps[17].OilNewsCount)", "@(sps[18].OilNewsCount)", "@(sps[19].OilNewsCount)",
+                "@(sps[20].OilNewsCount)", "@(sps[21].OilNewsCount)", "@(sps[22].OilNewsCount)", "@(sps[23].OilNewsCount)",
+                "@(sps[24].OilNewsCount)", "@(sps[25].OilNewsCount)", "@(sps[26].OilNewsCount)", "@(sps[27].OilNewsCount)",
+                "@(sps[28].OilNewsCount)", "@(sps[29].OilNewsCount)", "@(sps[30].OilNewsCount)", "@(sps[31].OilNewsCount)",
+                "@(sps[32].OilNewsCount)", "@(sps[33].OilNewsCount)", "@(sps[34].OilNewsCount)", "@(sps[35].OilNewsCount)"
+            ];
+
+            var config1 = {
+                type: "line",
+                data: {
+                    labels: ChartLabels,
+                    datasets: [{
+                        backgroundColor: "rgba(151,187,205,0.5)",
+                        borderColor: "rgba(151,187,205,0.7)",
+                        borderWidth: 2,
+                        label: "خبرهای نفتی",
+                        data: oilNews
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    title: {
+                        display: true
+                    },
+                    hover: {
+                        mode: "nearest",
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: " "
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: "مقدار"
+                            },
+                            ticks: {
+                                suggestedMin: 0,
+                                suggestedMax: @maxSp
+                                                                            },
+                        }]
+                    }
+                }
+            };
+
+
+            var config2 = {
+                type: "line",
+                data: {
+                    labels: ChartLabels,
+                    datasets: [{
+                        backgroundColor: "rgba(60,205,53,0.5)",
+                        borderColor: "rgba(60,205,53,0.7)",
+                        borderWidth: 2,
+                        label: "کل خبرها",
+                        data: NotOilNews
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    title: {
+                        display: true
+                    },
+                    hover: {
+                        mode: "nearest",
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: " "
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: "مقدار"
+                            },
+                            ticks: {
+                                suggestedMin: 0,
+                                suggestedMax: @maxNotSp },
+                        }]
+                    }
+                }
+            };
+
+
+
+
+            window.onload = function () {
+                var ctx = document.getElementById("line1").getContext("2d");
+                window.line1 = new Chart(ctx, config1);
+                var ctx = document.getElementById("line2").getContext("2d");
+                window.line2 = new Chart(ctx, config2);
+            };
+
+
+
+        </script>
+        <!-- END PAGE JAVASCRIPT -->
+
+</body>
+
+</html>

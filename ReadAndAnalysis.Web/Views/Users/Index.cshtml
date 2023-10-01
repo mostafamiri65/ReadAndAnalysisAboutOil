@@ -1,0 +1,96 @@
+﻿@model List<UsersDto>
+@{
+    ViewData["Title"] = "کاربران";
+}
+@section CssForThis{
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+}
+@section ToperLink{
+    <a href="#">تنظیمات سامانه</a>
+}
+@section PluginForThis{
+    <script src="/assets/plugins/data-table/js/jquery.dataTables.min.js"></script>
+
+}
+<div class="col-4 offset-4 d-grid gap-2">
+    <a asp-action="CreateUser" class="btn btn-primary">ثبت کاربر جدید</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped" id="data-table">
+        <thead>
+            <tr>
+                <th>نام و نام خانوادگی</th>
+                <th>نام کاربری</th>
+                <th>شماره موبایل </th>
+
+                <td>عملیات</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+
+                <tr>
+
+                    <td>@item.FullName</td>
+                    <td>@item.Username</td>
+                    <td>@item.Mobile</td>
+
+                    <td>
+                        <a class="btn btn-info btn-round" href="#" onclick="ChangePass(@item.Id)">تغییر رمز</a>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div><!-- /.table-responsive -->
+
+<div id="modal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="title">نمونه مودال عمومی</h4>
+            </div><!-- /.modal-header -->
+            <div class="modal-body" id="body">
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+            </div><!-- /.modal-body -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section Script{
+    <script>
+        var tableMain = $('#data-table').DataTable({
+            "columnDefs": [{
+                "targets": 3,
+                "orderable": false
+            }],
+            "pageLength": 25
+        });
+
+        $(window).on('resize', function () {
+            $('#data-table').css("width", "100%");
+        });
+    </script>
+    <script>
+        function ChangePass(id) {
+
+            $.ajax({
+                url: "/Users/ChangePassword",
+                type: "Get",
+                data: { userId: id }
+            }).done(function (result) {
+                $('#modal').modal('show');
+                $('#title').html(' تغییر رمز ...');
+                $('#body').html(result);
+            });
+        }
+    </script>
+
+}

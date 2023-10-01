@@ -1,0 +1,12 @@
+﻿@using ReadAndAnalysis.Data.Entities;
+@model IEnumerable<FieldOfUse>
+@{
+    Layout = null;
+}
+<select class="form-control" name="fieldchild" required>
+    <option value="">انتخاب کنید</option>
+    @foreach (var item in Model)
+    {
+        <option value="@item.Id">@item.Name</option>
+    }
+</select>

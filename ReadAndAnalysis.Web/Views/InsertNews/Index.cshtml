@@ -1,0 +1,148 @@
+﻿@using ReadAndAnalysis.Data.Entities;
+@model IEnumerable<InsertedNewsListDto>
+@{
+    Layout = null;
+    List<EstimateNews>? estimates = ViewData["Estimates"] as List<EstimateNews>;
+}
+
+<!DOCTYPE html>
+
+<html dir="rtl">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>لیست خبرهای ثبت شده</title>
+    <partial name="_AdminCss" />
+    <link href="/assets/plugins/kamadatepicker/kamadatepicker.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="col-4 offset-8 mb-2 d-grid gap-2">
+        <a class="btn btn-danger" asp-controller="Account" asp-action="Logout">خروج از سیستم</a>
+    </div>
+    <div class="table-responsive mt-4">
+        <div class="col-4 offset-4 mb-2 d-grid gap-2">
+            <a class="btn btn-info" asp-action="CreateInserted">ثبت خبر جدید</a>
+        </div>
+
+        <form asp-action="Index" method="get">
+            <div class="col-12 row">
+                <div class="col-3 row">
+                    <div class="col-3">
+                        <label>تاریخ شروع</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" autocomplete="off" id="start" name="startDate"
+                               class="form-control" />
+                    </div>
+                </div>
+                <div class="col-3 row">
+                    <div class="col-3">
+                        <label>تاریخ پایان</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" autocomplete="off" id="end" name="endDate"
+                               class="form-control" />
+                    </div>
+                </div>
+                <div class="col-3 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>نتیجه خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <select name="estimateId" class="form-control" >
+                            <option value="">انتخاب کنید</option>
+                            @foreach (var item in estimates)
+                            {
+                                <option value="@item.Id">@item.Name</option>
+
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group col-1 offset-1">
+                    <input type="submit" value="جستجو" class="btn btn-primary" />
+                </div>
+            </div>
+            </form>
+     
+        <table class="table table-bordered table-hover table-striped" id="data-table">
+            <thead>
+                <tr>
+                    <th>نتیجه خبر</th>
+                    <th>عنوان</th>
+                    <th>توضیحات</th>
+                    <th>ادرس سایت </th>
+                    <th>تاریخ انتشار</th>
+                    <td>عملیات</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderByDescending(c => c.Id))
+                {
+                    bool neutral = false;
+                    bool positive = false;
+                    bool negative = false;
+                    if (item.EstimateId == 1)
+                        neutral = true;
+                    if (item.EstimateId == 2)
+                        positive = true;
+                    if (item.EstimateId == 3)
+                        negative = true;
+                    <tr class="@((positive) ? "bg-success" : "") @((negative)?"bg-danger":"")">
+                        <td>
+                            @if (neutral)
+                            {
+                                <span>خنثی</span>
+                            }
+                            @if (positive)
+                            {
+                                <span>مثبت</span>
+                            }
+                            @if (negative)
+                            {
+                                <span>منفی</span>
+                            }
+                        </td>
+                        <td>@item.NewsTitle.ShowTitle()</td>
+                        <td>@item.NewsDescription.ShowInTable()</td>
+
+                        <td>@item.NewsUrl.ShowTitle()</td>
+                        <td>@item.NewsPublishedDate</td>
+                        <td>
+                            <a asp-controller="InsertNews"
+                               asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round">نمایش</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <script src="/assets/plugins/jquery/dist/jquery-3.6.1.min.js"></script>
+    <script src="/assets/plugins/bootstrap/bootstrap5/js/bootstrap.bundle.min.js"></script>
+    <!-- BEGIN PAGE JAVASCRIPT -->
+    <script src="/assets/plugins/kamadatepicker/kamadatepicker.min.js"></script>
+    <script src="/assets/js/pages/calendar-kama.js"></script>
+    <script>
+        kamaDatepicker('start',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
+    </script>
+    <script>
+        kamaDatepicker('end',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
+    </script>
+</body>
+</html>

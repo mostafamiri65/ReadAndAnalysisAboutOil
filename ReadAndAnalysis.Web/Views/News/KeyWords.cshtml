@@ -1,0 +1,106 @@
+﻿@model List<MainKeyWordListDto>
+@{
+    ViewData["Title"] = "کلمات کلیدی اصلی";
+}
+@section CssForThis{
+    <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+}
+@section ToperLink{
+    <a href="#">تنظیمات سامانه</a>
+}
+@section PluginForThis{
+    <script src="/assets/plugins/data-table/js/jquery.dataTables.min.js"></script>
+    <script src="/assets/js/pages/swal.js"></script>
+}
+<div class="col-4 offset-4 d-grid gap2"><a href="#" class="btn btn-primary" onclick="AddWord()">اضافه کردن کلمه کلیدی</a></div>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped" id="data-table">
+        <thead>
+            <tr>
+
+                <th>عنوان</th>
+                <td>عملیات</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+
+                    <td>
+                        <a class="btn btn-info btn-round" asp-controller="News"
+                           asp-action="ShowNewsByMainKey" asp-route-mainId="@item.Id">نمایش خبرها با این عنوان</a>
+
+
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div><!-- /.table-responsive -->
+
+<div id="modal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="title">نمونه مودال عمومی</h4>
+            </div><!-- /.modal-header -->
+            <div class="modal-body" id="body">
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+            </div><!-- /.modal-body -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section Script{
+    <script>
+        var tableMain = $('#data-table').DataTable({
+            "columnDefs": [{
+
+                "orderable": false
+            }],
+            "pageLength": 100
+        });
+
+        $(window).on('resize', function () {
+            $('#data-table').css("width", "100%");
+        });
+
+
+    </script>
+    <script>
+        function AddWord() {
+            $.ajax({
+                url: "/News/AddMainKeys",
+                type: "Get",
+                data: {}
+            }).done(function (result) {
+                $('#modal').modal('show');
+                $('#title').html(' اضافه کردن کلمه کلیدی ...');
+                $('#body').html(result);
+            });
+        }
+    </script>
+    <script>
+        function Show(id) {
+            $.ajax({
+                url: "/SystemSetting/ShowMains",
+                type: "Get",
+                data: { mainId: id }
+            }).done(function (result) {
+                $('#modal').modal('show');
+                $('#title').html(' ویرایش کردن کلمه کلیدی ...');
+                $('#body').html(result);
+            });
+        }
+    </script>
+
+
+        }

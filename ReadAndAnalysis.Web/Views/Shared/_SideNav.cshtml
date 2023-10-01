@@ -1,0 +1,77 @@
+﻿ <!-- /.sidebar-top -->
+<div class="side-menu-container">
+    <ul class="metismenu" id="side-menu">
+        <li>
+            <a href="#" class="dropdown-toggle">
+                <i class="icon-home"></i>
+                <span>سیستم و تنظیمات</span>
+            </a>
+            <ul>
+               <li>
+                    <a asp-controller="News" asp-action="KeyWords" class="">
+                        <i class="icon-home"></i>
+                        <span>کلمات کلیدی</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Users" asp-action="Index" class="">
+                        <i class="icon-home"></i>
+                        <span>کاربران</span>
+                    </a>
+                </li>
+               @*  <li>
+                    <a href="dashboard2.html" class="">
+                        <i class="icon-home"></i>
+                        <span>پیشخوان دو</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="parastoo.html" class="">
+                        <i class="icon-home"></i>
+                        <span>پیشخوان با فونت پرستو</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="yekan.html" class="">
+                        <i class="icon-home"></i>
+                        <span>پیشخوان با فونت یکان</span>
+                    </a>
+                </li>*@
+            </ul>
+        </li>
+    
+        <li>
+            <a href="#" class="dropdown-toggle">
+                <i class="icon-frame"></i>
+                <span>خبر ها</span>
+            </a>
+            <ul>
+                <li>
+                    <a asp-controller="ShowNews" asp-action="News" class="">
+                        <i class="icon-grid"></i>
+                        <span>لیست خبر ها</span>
+                    </a>
+                </li>
+              
+            </ul>
+        </li>
+       @* <li>
+            <a href="#" class="dropdown-toggle">
+                <i class="icon-eye"></i>
+                <span>فعالیت ها</span>
+            </a>
+            <ul>
+                <li>
+                    <a asp-area="Admin" asp-controller="Tasks" asp-action="Index" class="">
+                        <i class="icon-settings"></i>
+                        <span>لیست فعالیت ها</span>
+                    </a>
+                </li>
+              
+            </ul>
+        </li>*@
+     
+    </ul><!-- /#side-menu -->
+</div><!-- /.side-menu-container -->
+    </div><!-- /#sidebar -->
+<!-- END SIDEBAR -->

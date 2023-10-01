@@ -1,0 +1,70 @@
+﻿@model CreateUserDto
+@{
+    ViewData["Title"] = "کاربر جدید";
+    List<RolesDto>? roles = ViewData["Roles"] as List<RolesDto>;
+}
+@section ToperLink{
+    <a asp-controller="Users" asp-action="Index">کاربران</a>
+}
+<form asp-action="CreateUser" method="post">
+    <div class="col-md-12 mb-2 row">
+        <div class="col-md-6 col-sm-12 row">
+            <div class="col-sm-3">
+                <label>نام و نام خانوادگی</label>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" maxlength="200" asp-for="FullName" />
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12 row">
+            <div class="col-sm-3">
+                <label>شماره موبایل</label>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" maxlength="200" asp-for="Mobile" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 mb-2 row">
+        <div class="col-md-6 col-sm-12 row">
+            <div class="col-sm-3">
+                <label>نام کاربری</label>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" maxlength="200" asp-for="UserName" />
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-12 row">
+            <div class="col-sm-3">
+                <label>کلمه عبور</label>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" asp-for="Password" />
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mb-2 row">
+        <div class="col-md-2">
+            <label>
+                نقش ها
+            </label>
+        </div>
+        @if (roles != null)
+        {
+            @foreach (var item in roles)
+            {
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" name="roleIds" value="@item.Id">
+                            @item.Title
+                        </label>
+                    </div>
+                </div>             
+            }
+        }
+    </div>
+    <div class="col-md-4 offset-4 d-grid gap-2">
+        <input type="submit" value="ثبت" class="btn btn-success" />
+    </div>
+</form>

@@ -1,0 +1,13 @@
+﻿@model OilNewsDto
+@{
+    Layout = null;
+}
+<h2>
+    با تایید کردن ارزیابی صورت گرفته برای این خبر حذف می شود
+</h2>
+<form asp-action="DeleteEvaluted">
+    <input type="hidden" asp-for="Id" />
+    <div class="col-4 offset-4 gap-2 d-grid">
+        <input type="submit" value="حذف شود" class="btn btn-danger" />
+    </div>
+</form>

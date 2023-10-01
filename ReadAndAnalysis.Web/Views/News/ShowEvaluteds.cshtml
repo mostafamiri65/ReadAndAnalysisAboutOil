@@ -1,0 +1,146 @@
+﻿@using ReadAndAnalysis.Data.Entities
+@model List<EvalutedListDto>
+@{
+    ViewData["Title"] = "خبرهای ارزیابی شده";
+    List<EstimateNews>? estimates = ViewData["estimate"] as List<EstimateNews>;
+}
+
+@section CssForThis{
+    <link href="/assets/plugins/kamadatepicker/kamadatepicker.min.css" rel="stylesheet">
+  @*  <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+*@}
+@section ToperLink{
+    <a href="#">لیست اخبار</a>
+}
+@section PluginForThis{
+@*    <script src="/assets/plugins/data-table/js/jquery.dataTables.min.js"></script>
+*@
+    <script src="/assets/plugins/kamadatepicker/kamadatepicker.min.js"></script>
+    <script src="/assets/js/pages/calendar-kama.js"></script>
+}
+
+
+<form asp-action="ShowEvaluteds" method="get">
+    <div class="col-12 row ">
+        <div class="col-3 row">
+         @*   <div class="col-3">
+                <label>تاریخ شروع</label>
+            </div>
+            <div class="col-9">
+                <input type="text" autocomplete="off" id="start" name="startDate"
+                       class="form-control" />
+            </div>*@
+        </div>
+        <div class="col-3 row">
+           @* <div class="col-3">
+                <label>تاریخ پایان</label>
+            </div>
+            <div class="col-9">
+                <input type="text" autocomplete="off" id="end" name="endDate"
+                       class="form-control" />
+            </div>*@
+        </div>
+        <div class="col-3 row">
+            <div class="col-sm-12 col-md-2">
+                <label>نتیجه خبر</label>
+            </div>
+            <div class="col-sm-12 col-md-10">
+                <select name="estimateId" class="form-control" >
+                    <option value="">انتخاب کنید</option>
+                    @foreach (var item in estimates)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+
+                    }
+                </select>
+            </div>
+
+        </div>
+        <div class="col-3">
+            <input type="submit" value="پیدا کن" class="btn btn-warning" />
+        </div>
+
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped" id="data-table">
+        <thead>
+            <tr>
+
+                <th>عنوان</th>
+                <th>توضیحات</th>
+                <th>ادرس سایت </th>
+
+                <td>عملیات</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                bool neutral = false;
+                bool positive = false;
+                bool negative = false;
+                if (item.EstimateId == 1)
+                    neutral = true;
+                if (item.EstimateId == 2)
+                    positive = true;
+                if (item.EstimateId == 3)
+                    negative = true;
+                <tr class="@((positive) ? "bg-success" : "") @((negative)?"bg-danger":"")">
+                    <td>@item.Title.ShowTitle()</td>
+                    <td>@item.Description.ShowInTable()</td>
+
+                    <td>@item.TitleUrl</td>
+
+                    <td>
+                        <a asp-controller="News"
+                           asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round">نمایش</a>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+    <div>
+        <p>
+            <span class="p-3">خبر با نتیجه خنثی</span>
+            <span class="p-3 bg-success text-light">خبر با نتیجه مثبت</span>
+            <span class="p-3 bg-danger text-light">خبر با نتیجه منفی</span>
+
+        </p>
+    </div>
+</div><!-- /.table-responsive -->
+@section Script{
+    <script>
+        //var tableMain = $('#data-table').DataTable({
+        //    "columnDefs": [{
+        //        "targets": 3,
+        //        "orderable": false
+        //    }],
+        //    "pageLength": 100
+        //});
+
+        //$(window).on('resize', function () {
+        //    $('#data-table').css("width", "100%");
+        //});
+        kamaDatepicker('start',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
+    </script>
+    <script>
+        kamaDatepicker('end',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
+    </script>
+}

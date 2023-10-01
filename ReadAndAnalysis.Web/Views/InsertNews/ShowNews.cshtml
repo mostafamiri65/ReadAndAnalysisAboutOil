@@ -1,0 +1,112 @@
+﻿@using ReadAndAnalysis.Data.Entities;
+@model InsertedNewsListDto
+@{
+    Layout = null;
+    List<NegativeReason>? reasons = ViewData["Reasons"] as List<NegativeReason>;
+}
+
+<!DOCTYPE html>
+
+<html dir="rtl">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title> خبر </title>
+    <partial name="_AdminCss" />
+    <link href="/assets/plugins/persian-datepicker/css/persian-datepicker.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="table-responsive mt-4">
+        <div class="col-4 offset-4 mb-2 d-grid gap-2">
+            <a class="btn btn-info" asp-controller="InsertNews" asp-action="Edit" asp-route-id="@Model.Id">ویرایش</a>
+            <a class="btn btn-primary" asp-controller="InsertNews" asp-action="Index">لیست خبرها</a>
+        </div>
+      
+            <div class="col-12 row">
+                <div class="col-sm-12 col-md-12 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>عنوان خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <input class="form-control" autocomplete="off" readonly asp-for="NewsTitle" maxlength="150" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-2 row">
+                <div class="col-sm-12 col-md-12 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>متن خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <textarea class="form-control" readonly asp-for="NewsDescription" rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-2 row">
+                <div class="col-sm-12 col-md-6 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>لینک خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <input class="form-control" autocomplete="off" readonly asp-for="NewsUrl" maxlength="150" />
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>در مورد خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                       <input class="form-control" readonly value="@ViewBag.Mange" />
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>نتیجه خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <input readonly class="form-control" value="@ViewBag.estimate" />
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 row">
+                    <div class="col-sm-12 col-md-2">
+                        <label>تاریخ انتشار خبر</label>
+                    </div>
+                    <div class="col-sm-12 col-md-10">
+                        <input asp-for="NewsPublishedDate" autocomplete="off" readonly class="form-control" />
+
+                    </div>
+                </div>
+            </div>
+
+        <div class="col-12 mt-2 row">
+            <div class="col-md-4  row">
+                <div class="col-md-6">
+                    <label>دلیل نتیجه منفی</label>
+                </div>
+                <div class="col-md-6">
+                    <select asp-for="NegativeReasonId" class="form-control" disabled >
+                        <option value=""> </option>
+                        @foreach (var item in reasons)
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-8 row">
+                <div class="col-sm-12 col-md-2">
+                    <label>دلیل نتیجه خبر</label>
+                </div>
+                <div class="col-sm-12 col-md-10">
+                    <textarea class="form-control" readonly asp-for="EstimateDscp" rows="4"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/assets/plugins/jquery/dist/jquery-3.6.1.min.js"></script>
+    <script src="/assets/plugins/bootstrap/bootstrap5/js/bootstrap.bundle.min.js"></script>
+    <!-- BEGIN PAGE JAVASCRIPT -->
+    <script src="/assets/plugins/persian-date/persian-date.min.js"></script>
+    <script src="/assets/plugins/persian-datepicker/js/persian-datepicker.min.js"></script>
+    <script src="/assets/js/pages/calendar.js"></script>
+</body>
+</html>
