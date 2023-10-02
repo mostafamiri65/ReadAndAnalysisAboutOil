@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ReadAndAnalysis.App.DTOs.News;
 using ReadAndAnalysis.App.Extensions;
 using ReadAndAnalysis.App.Services.Interfaces;
 using ReadAndAnalysis.Web.Models;
@@ -17,31 +18,45 @@ namespace ReadAndAnalysis.Web.Controllers
             _homeService = homeService;
         }
 
-        public async Task<IActionResult> Index(string? start , string end , int? relevanceId)
+        public async Task<IActionResult> Index(string? start, string end, int? relevanceId)
         {
             var isSecrotary = await _homeService.IsSecretory(User.GetUserId());
-            if(isSecrotary)
+            if (isSecrotary)
             {
                 return RedirectToAction("Index", "InsertNews");
             }
 
             var boss = await _homeService.IsBoss(User.GetUserId());
             ViewBag.IsBoss = boss;
-            if(boss)
+            if (boss)
             {
-                ViewData["Relevances"] = await _homeService.GetNewsRelevance();
-                if (start == null) start = DateTime.Now.ToShamsi();
-                if(end == null) end = (DateTime.Now.AddDays(1)).ToShamsi();
-                if(relevanceId==null) relevanceId = 1;
-                ViewBag.RelevanceTitle = await _homeService.GetRelevanceTitleById((int)relevanceId);
+
+                var relevances = await _homeService.GetNewsRelevance();
+
+                if (relevanceId == null) relevanceId = 1;
+                if (start == null) start = "1402/01/01";
+                if (end == null) end = DateTime.Now.ToShamsi();
+                HomeControllerIndexDto dto = new HomeControllerIndexDto()
+                {
+                    StartDate = start,
+                    EndDate = end,
+                    Relevances = relevances,
+
+                };
+                var relevanceTitle = await _homeService.GetRelevanceTitleById((int)relevanceId);
                 var negative = await _homeService.GetNegativeOilNewsCount(start, end);
-                var posetive = await _homeService.GetPosetiveOilNewsCount(start , end);
+                var posetive = await _homeService.GetPosetiveOilNewsCount(start, end);
                 var neutral = await _homeService.GetPosetiveOilNewsCount(start, end);
-                var relevance = await _homeService.GetEvaluatedNewsByBoos(start, end,relevanceId);
-                ViewBag.Negative = negative;
-                ViewBag.Posetive = posetive;
-                ViewBag.Neutral = neutral;
-                ViewBag.Relevance = relevance;
+                var relevance = await _homeService.GetEvaluatedNewsByBoos(start, end, relevanceId);
+                dto.RelevanceTitle = relevanceTitle;
+                dto.PosetiveCount = posetive;
+                dto.NegativeCount = negative;
+                dto.NeutralCount = neutral;
+                dto.RelevanceCount = relevance;
+
+
+                ViewData["HomeIndex"] = dto;
+
             }
             var sp = await _homeService.GetDataFromSp();
             var count = await _homeService.GetAllNewsCount();
@@ -50,7 +65,7 @@ namespace ReadAndAnalysis.Web.Controllers
             ViewBag.GetOurNewsCount = await _homeService.GetOilNewsCount();
             ViewBag.GetProcessedNewsCount = Convert.ToInt64(await _homeService.GetProcessedNewsCount());
             ViewData["TestSp"] = sp;
-          
+
 
             return View();
         }

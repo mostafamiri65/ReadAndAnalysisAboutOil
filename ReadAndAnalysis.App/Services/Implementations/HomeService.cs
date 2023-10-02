@@ -59,8 +59,8 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<int> GetEvaluatedNewsByBoos(string? startDate, string? endDate, int? relevanceId)
         {
-            var start = Convert.ToDateTime(startDate);
-            var end = Convert.ToDateTime(endDate);
+            var start =startDate.ToMiladi();
+            var end = endDate.ToMiladi();
             var evaluated = await _context.EvaluatedResults.Include(e => e.News)
                   .Where(e => e.RelevanceId == relevanceId && e.News.CreateDate >= start &&
                   e.News.CreateDate < end).ToListAsync();
@@ -69,8 +69,8 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<int> GetNegativeOilNewsCount(string? startDate, string? endDate)
         {
-            var start = Convert.ToDateTime(startDate);
-            var end = Convert.ToDateTime(endDate);
+            var start = startDate.ToMiladi();
+            var end = endDate.ToMiladi();
             var evaluated = await _context.EvaluatedResults.Include(e => e.News)
                   .Where(e => e.EstimateId == 3 && e.News.CreateDate >= start &&
                   e.News.CreateDate < end).ToListAsync();
@@ -79,8 +79,8 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<int> GetNeutralOilNewsCount(string? startDate, string? endDate)
         {
-            var start = Convert.ToDateTime(startDate);
-            var end = Convert.ToDateTime(endDate);
+            var start = startDate.ToMiladi();
+            var end = endDate.ToMiladi();
             var evaluated = await _context.EvaluatedResults.Include(e => e.News)
                   .Where(e => e.EstimateId == 1 && e.News.CreateDate >= start &&
                   e.News.CreateDate < end).ToListAsync();
@@ -100,8 +100,8 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<int> GetPosetiveOilNewsCount(string? startDate, string? endDate)
         {
-            var start = Convert.ToDateTime(startDate);
-            var end = Convert.ToDateTime(endDate);
+            var start = startDate.ToMiladi();
+            var end = endDate.ToMiladi();
             var evaluated = await _context.EvaluatedResults.Include(e => e.News)
                   .Where(e => e.EstimateId == 2 && e.News.CreateDate >= start &&
                   e.News.CreateDate < end).ToListAsync();

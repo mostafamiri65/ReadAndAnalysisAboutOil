@@ -9,7 +9,7 @@
     int maxSp = oilSps.Max();
     List<int> notoilSps = sps.Select(s => s.NotOilNewsCount).ToList();
     int maxNotSp = notoilSps.Max();
-    List<NewsRelevance>? relevanes = ViewData["Relevances"] as List<NewsRelevance>;
+  HomeControllerIndexDto? result = ViewData["HomeIndex"] as HomeControllerIndexDto;
 }
 
 <!DOCTYPE html>
@@ -205,7 +205,7 @@
                                         <div class="stat-box use-cyan shadow">
                                             <a href="#">
                                                 <div class="stat">
-                                                    <div class="counter-down" data-value="@ViewBag.Posetive"></div>
+                                                    <div class="counter-down" data-value="@result.PosetiveCount"></div>
                                                     <div class="h3">خبرهای مثبت</div>
                                                 </div><!-- /.stat -->
                                                 <div class="visual">
@@ -218,7 +218,7 @@
                                         <div class="stat-box use-blue shadow">
                                             <a href="#">
                                                 <div class="stat">
-                                                    <div class="counter-down" data-value="@(ViewBag.Negative)"></div>
+                                                    <div class="counter-down" data-value="@(result.NegativeCount)"></div>
                                                     <div class="h3">خبرهای منفی</div>
                                                 </div><!-- /.stat -->
                                                 <div class="visual">
@@ -231,7 +231,7 @@
                                         <div class="stat-box use-green shadow">
                                             <a href="#">
                                                 <div class="stat">
-                                                    <div class="counter-down" data-value="@ViewBag.Neutral"></div>
+                                                    <div class="counter-down" data-value="@result.NeutralCount"></div>
                                                     <div class="h3">خبر های خنثی</div>
                                                 </div><!-- /.stat -->
                                                 <div class="visual">
@@ -244,8 +244,8 @@
                                         <div class="stat-box use-red shadow">
                                             <a href="#">
                                                 <div class="stat">
-                                                    <div class="counter-down" data-value="@ViewBag.Relevance"></div>
-                                                    <div class="h3">خبرهای در رابطه با @ViewBag.RelevanceTitle</div>
+                                                    <div class="counter-down" data-value="@result.RelevanceCount"></div>
+                                                    <div class="h3">خبرهای در رابطه با @result.RelevanceTitle</div>
                                                 </div><!-- /.stat -->
                                                 <div class="visual">
                                                     <i class=""></i>
@@ -264,7 +264,7 @@
                                             </div>
                                             <div class="col-8 col-lg-9">
                                                 <input type="text" name="start" autocomplete="off" id="start"
-                                                       class="form-control" />
+                                                       value="@result.StartDate" class="form-control" />
                                             </div>
                                         </div>
                                         <div class="col-6 col-lg-3 mb-md-2 row">
@@ -273,7 +273,7 @@
                                             </div>
                                             <div class="col-8 col-lg-9">
                                                 <input type="text" name="end" autocomplete="off" id="end"
-                                                       class="form-control" />
+                                                       value="@result.EndDate" class="form-control" />
                                             </div>
                                         </div>
                                         <div class="col-6 col-lg-3 mb-md-2 row">
@@ -282,7 +282,7 @@
                                             </div>
                                             <div class="col-8 col-lg-9">
                                                 <select name="relevanceId" class="form-select form-control">
-                                                    @foreach (var item in relevanes)
+                                                    @foreach (var item in result.Relevances)
                                                     {
                                                         <option value="@item.Id">@item.Title</option>
                                                     }
@@ -437,6 +437,9 @@
         <script src="/assets/plugins/chart.js/dist/Chart.bundle.min.js"></script>
         <script src="/assets/js/pages/bar-chart.js"></script>
         <partial name="_Notification" />
+        <script>
+            console.log(@result.PosetiveCount);
+            </script>
         <script>
             kamaDatepicker('start',
                 {
