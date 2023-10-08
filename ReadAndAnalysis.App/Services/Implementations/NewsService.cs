@@ -70,6 +70,11 @@ namespace ReadAndAnalysis.App.Services.Implementations
             return true;
         }
 
+        public async Task<bool> CanAddEvalutedResult(long newsId)
+        {
+            return await _context.EvaluatedResults.AnyAsync(s => s.NewsId == newsId);
+        }
+
         public async Task DeleteEvaluated(long newsId)
         {
             var evaluted = await GetEvaluatedResult(newsId);
@@ -114,11 +119,11 @@ namespace ReadAndAnalysis.App.Services.Implementations
                 inserteds = inserteds.Where(d =>
                  d.NewsPublishedDate.ToMiladi() <= end).ToList();
             }
-            if(estimateId != null)
+            if (estimateId != null)
             {
-                inserteds = inserteds.Where(d=>d.EstimateId == estimateId).ToList();
+                inserteds = inserteds.Where(d => d.EstimateId == estimateId).ToList();
             }
-           
+
             List<InsertedNewsListDto> list = new List<InsertedNewsListDto>();
             foreach (var item in inserteds)
             {
@@ -154,31 +159,37 @@ namespace ReadAndAnalysis.App.Services.Implementations
             return list;
         }
 
-        public async Task<List<OilNewsListDto>> GetAllOilNews()
+        public async Task<List<OilNewsListDto>> GetAllOilNews(string? starDate, string? endDate)
         {
+            var start = starDate.ToMiladi();
+            var end = endDate.ToMiladi();
             ///INPUT : int pageId = 1, string startPublishDate = "", string endPublishDate = ""
             //int take = 20;
             //int skip = (pageId - 1) * take;
             List<OilNewsListDto> list = new List<OilNewsListDto>();
             var newsList = await _context.NewsRssReeds.Where(n => (bool)n.IsOil).ToListAsync();
-
-
-
-            foreach (var news in newsList)
+            if (starDate != null && endDate != null)
             {
-                var site = news.LinkUrl.Split("/");
-                OilNewsListDto dto = new OilNewsListDto()
-                {
-                    Id = news.Id,
-                    Title = news.Title,
-                    LinkUrl = news.LinkUrl,
-                    Description = news.Description,
-                    TitleUrl = site[2].ToString(),
-                    CreateDate = news.CreateDate,
-                    PublishedDate = news.PublishedDate
-                };
-                list.Add(dto);
+                newsList = newsList.Where(n => (n.CreateDate.ToShamsi()).ToMiladi() > start &&
+            (n.CreateDate.ToShamsi()).ToMiladi() <= end).ToList();
             }
+
+
+                foreach (var news in newsList)
+                {
+                    var site = news.LinkUrl.Split("/");
+                    OilNewsListDto dto = new OilNewsListDto()
+                    {
+                        Id = news.Id,
+                        Title = news.Title,
+                        LinkUrl = news.LinkUrl,
+                        Description = news.Description,
+                        TitleUrl = site[2].ToString(),
+                        CreateDate = news.CreateDate,
+                        PublishedDate = news.PublishedDate
+                    };
+                    list.Add(dto);
+                }
 
 
             return list;
@@ -234,12 +245,12 @@ namespace ReadAndAnalysis.App.Services.Implementations
             return title;
         }
 
-        public async Task<List<EvalutedListDto>> GetEvalutedNews(string? startDate, string? endDate, long? estimateId )
+        public async Task<List<EvalutedListDto>> GetEvalutedNews(string? startDate, string? endDate, long? estimateId)
         {
             List<EvalutedListDto> list = new List<EvalutedListDto>();
             var evaluteds = await _context.EvaluatedResults
-                .Include(e=>e.News).ToListAsync();
-            if (startDate!=null)
+                .Include(e => e.News).ToListAsync();
+            if (startDate != null)
             {
                 DateTime start = startDate.ToMiladi();
                 evaluteds = evaluteds.Where(d =>
@@ -270,7 +281,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
                     EstimateId = item.EstimateId,
                     FieldOfUseId = item.FieldOfUseId,
                     StatisticalSourceId = item.StatisticalSourceId,
-                    
+
                 };
                 list.Add(dto);
             }
@@ -349,7 +360,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<List<NewsRelevance>> GetRelevances()
         {
-           return await _context.NewsRelevances.ToListAsync();
+            return await _context.NewsRelevances.ToListAsync();
         }
 
         public async Task<List<StatisticalSource>> GetStatisticalSource()

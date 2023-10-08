@@ -4,22 +4,42 @@ using ReadAndAnalysis.App.DTOs.News;
 using ReadAndAnalysis.App.Extensions;
 using ReadAndAnalysis.App.Services.Interfaces;
 
+
 namespace ReadAndAnalysis.Web.Controllers
 {
     [Authorize]
     public class NewsController : BaseController
     {
         private INewsService _newsService;
-       
+
         public NewsController(INewsService newsService)
         {
             _newsService = newsService;
-          
+
         }
-        public async Task<IActionResult> ShowOilNews()
+        public async Task<IActionResult> ShowOilNews(int? date, string? startDate, string? endDate)
         {
-            var list = await _newsService.GetAllOilNews();
-            list = list.OrderBy(n=>n.CreateDate).ToList();
+            string start = "";
+            string end = "";
+            if (date == null && startDate == null && endDate == null)
+            {
+                start = DateExtensions.FirstDayOfPersianMonth();
+                end = DateTime.Now.ToShamsi();
+             
+            }
+            if (date != null)
+            {
+                start = DateTime.Now.AddDays((double)-date).ToShamsi();
+                end = DateTime.Now.ToShamsi();
+            }else if(startDate!=null && endDate != null)
+            {
+                start = startDate;
+                end = endDate;
+            }
+            ViewBag.Start = start;
+            ViewBag.EndDate = end;
+            var list = await _newsService.GetAllOilNews(start, end);
+            list = list.OrderBy(n => n.CreateDate).ToList();
             return View(list);
         }
         public async Task<IActionResult> ShowNews(long newsId)
@@ -27,10 +47,10 @@ namespace ReadAndAnalysis.Web.Controllers
             var keywords = await _newsService.GetAllUsedKeyWords(newsId);
             ViewData["Words"] = keywords;
             var relevances = await _newsService.GetRelevances();
-            ViewData["Relevances"]= relevances;
+            ViewData["Relevances"] = relevances;
 
             ViewBag.IsEvaluated = await _newsService.IsEvaluated(newsId);
-           var evaluted = await _newsService.GetEvaluatedResult(newsId);
+            var evaluted = await _newsService.GetEvaluatedResult(newsId);
             ViewData["evaluted"] = evaluted;
             var fields = await _newsService.GetFieldOfUse();
             ViewData["fields"] = fields;
@@ -45,11 +65,16 @@ namespace ReadAndAnalysis.Web.Controllers
         }
         [HttpPost]
         public async Task<IActionResult> Show(long newsId, Guid fieldParent, long fieldchild,
-            long? source, long estimate,long relevance)
+            long? source, long estimate, long relevance)
         {
-          
+            bool isexist = await _newsService.CanAddEvalutedResult(newsId);
+            if (!isexist)
+            {
+                TempData[ErrorMessage] = "این خبر پردازش شده است.";
+                return RedirectToAction("ShowNews", new { newsId = newsId });
+            }
             await _newsService.AddEvalutedResult(newsId, fieldchild, source, estimate,
-                User.GetUserId(),relevance);
+                User.GetUserId(), relevance);
             return RedirectToAction("ShowOilNews");
         }
         public async Task<IActionResult> KeyWords()
@@ -87,7 +112,7 @@ namespace ReadAndAnalysis.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteEvaluted(OilNewsDto news)
         {
-           await _newsService.DeleteEvaluated(news.Id);
+            await _newsService.DeleteEvaluated(news.Id);
             return RedirectToAction("ShowNews", new { newsId = news.Id });
         }
         [HttpGet]
@@ -95,7 +120,7 @@ namespace ReadAndAnalysis.Web.Controllers
         {
             var estimate = await _newsService.GetEstimateNews();
             ViewData["estimate"] = estimate;
-            var list = await _newsService.GetEvalutedNews(startDate, endDate,estimateId);
+            var list = await _newsService.GetEvalutedNews(startDate, endDate, estimateId);
             return View(list);
         }
     }

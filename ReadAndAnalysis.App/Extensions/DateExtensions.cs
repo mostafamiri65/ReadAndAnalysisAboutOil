@@ -23,6 +23,15 @@ namespace ReadAndAnalysis.App.Extensions
            
             return new DateTime(year, month, day, new PersianCalendar());
         }
+        public static string FirstDayOfPersianMonth()
+        {
+            var pc = new PersianCalendar();
+            var today = DateTime.Today;
+            int year = pc.GetYear(today);
+            int month = pc.GetMonth(today);
+            int day = 01;
+            return $"{year}/{month.ToString("00")}/{day.ToString("00")}";
+        }
 
     }
 }

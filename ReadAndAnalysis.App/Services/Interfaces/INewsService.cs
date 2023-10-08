@@ -10,7 +10,7 @@ namespace ReadAndAnalysis.App.Services.Interfaces
 {
     public interface INewsService
     {
-        Task<List<OilNewsListDto>> GetAllOilNews();
+        Task<List<OilNewsListDto>> GetAllOilNews(string? starDate,string? endDate);
         Task<List<MainKeyWordListDto>> GetAllMainKeyWords();
         Task<KeyWordsUsedInOilNewsDto> GetAllUsedKeyWords(long newsId);
         Task<OilNewsDto> GetOilNews(long newsId);
@@ -24,6 +24,7 @@ namespace ReadAndAnalysis.App.Services.Interfaces
         Task<EvaluatedResult?> GetEvaluatedResult(long newsId);
         Task DeleteEvaluated(long newsId);
         Task<string?> GetEvalutedFieldTitle(long newsId);
+        Task<bool> CanAddEvalutedResult(long newsId);
         Task AddEvalutedResult(long newsId, long fieldchild,
             long? source, long estimate, long userId,long? relevance);
         Task<List<EvalutedListDto>> GetEvalutedNews(string? startDate, string? endDate, long? estimateId);

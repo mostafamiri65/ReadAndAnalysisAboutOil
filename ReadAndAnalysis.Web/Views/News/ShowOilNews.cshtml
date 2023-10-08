@@ -1,19 +1,59 @@
 ﻿@model IEnumerable<OilNewsListDto>
 @{
     ViewData["Title"] = "خبرهای نفتی";
-   
+
 }
 @section CssForThis{
     <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+    <link href="~/assets/plugins/kamadatepicker/kamadatepicker.min.css" rel="stylesheet" />
 }
 @section ToperLink{
     <a href="#">لیست اخبار</a>
 }
 @section PluginForThis{
     <script src="/assets/plugins/data-table/js/jquery.dataTables.min.js"></script>
-   
+    <script src="~/assets/plugins/kamadatepicker/kamadatepicker.min.js"></script>
 }
-<a class="btn btn-primary" href="/">داشبورد</a>
+<div class="card m-3">
+    <p>
+        نمایش اطلاعات در بازه زمانی @ViewBag.Start تا بازه زمانی @ViewBag.EndDate
+    </p>
+</div>
+<div class="row col-12" id="btns">
+    <div class="col-3">
+        <a class="btn btn-info" asp-action="ShowOilNews" asp-route-date="1">نمایش فقط امروز</a>
+    </div>
+    <div class="col-3">
+        <a class="btn btn-info" asp-action="ShowOilNews" asp-route-date="3">نمایش 3 روز اخیر</a>
+    </div>
+    <div class="col-3">
+        <a class="btn btn-info" asp-action="ShowOilNews" asp-route-date="7">نمایش یک هفته اخیر</a>
+    </div>
+    <div class="col-3">
+        <a class="btn btn-info" onclick="Showbtns()">نمایش بازه دلخواه</a>
+    </div>
+</div>
+<form asp-action="ShowOilNews" method="get">
+<div class="row col-12" id="dates" >
+   
+        <div class="col-lg-5 col-md-12 row">
+            <div class="col-2"><label>از تاریخ</label></div>
+            <div class="col-10">
+                <input name="startDate" class="form-control" autocomplete="off"
+                       value="@ViewBag.Start" id="startDate" />
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-12 row">
+            <div class="col-2"><label>تا تاریخ</label></div>
+            <div class="col-10">
+                <input name="endDate" class="form-control" autocomplete="off"
+                value="@ViewBag.EndDate" id="endDate" />
+            </div>
+        </div>
+<div class="col-2"><input type="submit" value="بگرد" class="btn btn-info" /></div>
+
+    </div>
+</form>
 <div class="table-responsive">
     <table class="table table-bordered table-hover table-striped" id="data-table">
         <thead>
@@ -22,12 +62,12 @@
                 <th>عنوان</th>
                 <th>توضیحات</th>
                 <th>ادرس سایت </th>
-             
+
                 <td>عملیات</td>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.OrderByDescending(c=>c.Id))
+            @foreach (var item in Model.OrderByDescending(c => c.Id))
             {
                 <tr>
                     <td>@item.Title.ShowTitle()</td>
@@ -53,11 +93,40 @@
                 "orderable": false
             }],
             "pageLength": 100,
-            ordering: false
+            ordering: false, searching: false,
         });
 
         $(window).on('resize', function () {
             $('#data-table').css("width", "100%");
         });
+    </script>
+    <script>
+        document.ready($("#dates").fadeOut());
+    </script>
+    <script>
+        function Showbtns(){
+            $("#dates").fadeIn(500);
+            $("#btns").fadeOut();
+        }
+    </script>
+    <script>
+        kamaDatepicker('startDate',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
+    </script>
+    <script>
+        kamaDatepicker('endDate',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
     </script>
 }
