@@ -8,6 +8,7 @@
     List<FieldOfUse>? fields = ViewData["fields"] as List<FieldOfUse>;
     List<StatisticalSource>? sources = ViewData["source"] as List<StatisticalSource>;
     EvaluatedResult? eva = ViewData["evaluted"] as EvaluatedResult;
+    List<NotOilReason>? reasons = ViewData["NotOilReasons"] as List<NotOilReason>;
     string? titleEva = ViewData["titleEva"] as string;
 }
 
@@ -39,8 +40,32 @@
         <span>@item - </span>
     }
 </div>
+
+
+
 @if (!ViewBag.IsEvaluated)
 {
+    <form method="post" asp-action="NotOilReason">
+        <input type="hidden" name="newsId" value="@Model.Id" />
+        <div class="col-12 border border-primary p-1 rounded row">
+            <h4>آیا این خبر می تواند از این لیست حذف شود ؟ </h4>
+            <div class="col-4">دلیل حذف خبر از این لیست</div>
+            <div class="col-4">
+                <select name="reasonId" class="form-select" required>
+                    <option>انتخاب کنید</option>
+                    @foreach (var item in reasons)
+                    {
+                        <option value="@item.Id">@item.Reason</option>
+                    }
+                </select>
+            </div>
+            <div class="col-4 d-grid gap-2">
+                <input type="submit" value="ثبت اطلاعات" class="btn btn-outline-danger border border-danger" id="btn_submit" />
+                @* <a class="btn btn-outline-danger" onclick="DeleteOil('@Model.Id')">این خبر مربوط به نفت نیست</a> *@
+            </div>
+        </div>
+    </form>
+
     <form asp-action="Show" method="post">
         <input type="hidden" name="newsId" value="@Model.Id" />
         <div class="col-12 row mb-2">
@@ -134,7 +159,7 @@ else
                         <input class="form-control" value="@titleEva" readonly />
                     </div>
                 </div>
-              
+
             </div>
             <div class="col-12 row mb-2">
                 <div class="col-6 row">
@@ -162,7 +187,7 @@ else
 
         </div>
         <a class="btn btn-danger" onclick="Delete(@Model.Id)">حذف ارزیابی</a>
-    </div>  
+    </div>
 
 }
 
@@ -185,7 +210,18 @@ else
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-@section Script{
+@section Script {
+    <script>
+        $(document).ready(function () {
+            $("#btn_submit").click(function (event) {
+                if (!confirm('از انجام عملیات اطمینان دارید')) {
+                    event.preventDefault();
+                }
+
+            });
+        });
+    </script>
+
     <script>
         function ChangeParent() {
             $("#shownChild").hide();
@@ -205,6 +241,20 @@ else
             }).done(function (result) {
                 $('#modal').modal('show');
                 $('#title').html(' حذف ارزیابی ...');
+                $('#body').html(result);
+            });
+        }
+    </script>
+
+    <script>
+        function DeleteOil(id) {
+            $.ajax({
+                url: "/News/NotOil",
+                type: "Get",
+                data: { newsId: id }
+            }).done(function (result) {
+                $('#modal').modal('show');
+                $('#title').html(' حذف خبر نفتی ...');
                 $('#body').html(result);
             });
         }

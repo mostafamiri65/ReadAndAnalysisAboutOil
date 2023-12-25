@@ -94,6 +94,9 @@
                     <td>@item.TitleUrl</td>
 
                     <td>
+                        @if(negative){
+                            <a asp-action="ShowNegativeForSms" asp-route-newsId="@item.Id" class="btn btn-warning btn-round">ارسال برای اس ام اس</a>
+                        }
                         <a asp-controller="News"
                            asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round">نمایش</a>
                     </td>

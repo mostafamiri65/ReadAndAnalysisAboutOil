@@ -37,5 +37,12 @@ namespace ReadAndAnalysis.App.Services.Interfaces
         Task<string?> GetLastPublishedDate(long userId);
         Task<List<NegativeReason>> GetNegativeReasons();
         Task<List<NewsRelevance>> GetRelevances();
+        Task DeleteOilNews(long newsId , long userId);
+        Task<List<NotOilReason>> GetNotOilReasons();
+        Task NotOilNewsWithReason(long newsId, int reasonId, long userId);
+        Task SendSms(string mobile, string message);
+        Task<List<NegativeOilDto>> GetNegativeOilNewsForSendingSms();
+        Task AddToNegativeOilNewsForSend(long newsId, long userId);
+        Task<bool> SendingSms();
     }
 }

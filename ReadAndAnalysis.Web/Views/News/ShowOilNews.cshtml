@@ -62,19 +62,20 @@
                 <th>عنوان</th>
                 <th>توضیحات</th>
                 <th>ادرس سایت </th>
-
+                <th>تاریخ</th>
                 <td>عملیات</td>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.OrderByDescending(c => c.Id))
             {
-                <tr>
+               
+                <tr  >
                     <td>@item.Title.ShowTitle()</td>
                     <td>@item.Description.ShowInTable()</td>
 
                     <td>@item.TitleUrl</td>
-
+                    <td>@item.PublishedDate.ToMiladiInverse().ToShamsi()</td>
                     <td>
                         <a asp-controller="News"
                            asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round">نمایش</a>

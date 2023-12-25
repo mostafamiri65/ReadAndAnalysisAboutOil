@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadAndAnalysis.Data.Entities;
 
@@ -11,9 +12,11 @@ using ReadAndAnalysis.Data.Entities;
 namespace ReadAndAnalysis.Data.Migrations
 {
     [DbContext(typeof(TxtPrcContext))]
-    partial class TxtPrcContextModelSnapshot : ModelSnapshot
+    [Migration("20231008094434_mig_updateNewsRssReed")]
+    partial class mig_updateNewsRssReed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,31 +406,6 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.ToTable("MedName", (string)null);
                 });
 
-            modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NegativeOilNewsForSendingSms", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("NewsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NegativeOilNewsForSendingSms");
-                });
-
             modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NegativeReason", b =>
                 {
                     b.Property<long>("Id")
@@ -638,10 +616,11 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.Property<long>("NewsSourceDetailId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("NotOil")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("0");
+                    b.Property<bool?>("NotOil")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("NotOilUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("ProcDate")
                         .HasColumnType("datetime");
@@ -656,9 +635,6 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.Property<string>("Title")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<long?>("UserIdThatMakeIdNotOil")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -822,59 +798,6 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.HasIndex("SourceDetailId");
 
                     b.ToTable("NewsSourceDetails");
-                });
-
-            modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NotOilReason", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotOilReasons");
-                });
-
-            modelBuilder.Entity("ReadAndAnalysis.Data.Entities.SendSms", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Detail")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("IsSended")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Mobile")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<long?>("NotOilNewsForSendingSmsId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("SendDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SendedText")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SendSms");
                 });
 
             modelBuilder.Entity("ReadAndAnalysis.Data.Entities.StatisticalSource", b =>

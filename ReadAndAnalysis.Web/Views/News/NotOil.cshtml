@@ -1,0 +1,14 @@
+﻿@model NotOil
+@{
+    Layout = null;
+}
+<form asp-action="NotOil">
+    <input type="hidden" value="@ViewBag.Id" asp-for="NewsId" />
+    <label>آیا از انجام این کار اطمینان دارید ؟</label>
+    <div class="alert alert-danger">
+        <p>با تایید این کار این خبر از لیست اخبار نفتی خارج می شود</p>
+    </div>
+    <div class="div-4 offset-4 d-grid gap-2 mt-2">
+        <input type="submit" value="حذف خبر" class="btn btn-danger" />
+    </div>
+</form>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadAndAnalysis.Data.Entities;
 
@@ -11,9 +12,11 @@ using ReadAndAnalysis.Data.Entities;
 namespace ReadAndAnalysis.Data.Migrations
 {
     [DbContext(typeof(TxtPrcContext))]
-    partial class TxtPrcContextModelSnapshot : ModelSnapshot
+    [Migration("20231223190857_mig_AddSendSms")]
+    partial class mig_AddSendSms
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -401,31 +404,6 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MedName", (string)null);
-                });
-
-            modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NegativeOilNewsForSendingSms", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("NewsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NegativeOilNewsForSendingSms");
                 });
 
             modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NegativeReason", b =>
@@ -848,7 +826,7 @@ namespace ReadAndAnalysis.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreateDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Detail")
@@ -862,10 +840,7 @@ namespace ReadAndAnalysis.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<long?>("NotOilNewsForSendingSmsId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("SendDate")
+                    b.Property<DateTime>("SendDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SendedText")

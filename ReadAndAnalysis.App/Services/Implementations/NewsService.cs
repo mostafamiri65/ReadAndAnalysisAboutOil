@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Ghasedak.Core;
 using Microsoft.EntityFrameworkCore;
 using ReadAndAnalysis.App.DTOs.News;
 using ReadAndAnalysis.App.Extensions;
@@ -85,6 +86,16 @@ namespace ReadAndAnalysis.App.Services.Implementations
             }
         }
 
+        public async Task DeleteOilNews(long newsId, long userId)
+        {
+            var news = await _context.NewsRssReeds.SingleAsync(n => n.Id == newsId);
+            news.NotOil = 1;
+            news.UserIdThatMakeIdNotOil = userId;
+            _context.NewsRssReeds.Update(news);
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task EditInsertedNews(InsertedNewsListDto insert, long userId)
         {
             var inserted = await _context.NewsInserteds.SingleAsync(n => n.Id == insert.Id);
@@ -163,19 +174,24 @@ namespace ReadAndAnalysis.App.Services.Implementations
         {
             var start = starDate.ToMiladi();
             var end = endDate.ToMiladi();
-            ///INPUT : int pageId = 1, string startPublishDate = "", string endPublishDate = ""
-            //int take = 20;
-            //int skip = (pageId - 1) * take;
+
             List<OilNewsListDto> list = new List<OilNewsListDto>();
+
+            var evaluateds = await _context.EvaluatedResults.Select(c => c.NewsId).ToListAsync();
+
             var newsList = await _context.NewsRssReeds.Where(n => (bool)n.IsOil).ToListAsync();
             if (starDate != null && endDate != null)
             {
-                newsList = newsList.Where(n => (n.CreateDate.ToShamsi()).ToMiladi() > start &&
-            (n.CreateDate.ToShamsi()).ToMiladi() <= end).ToList();
+                newsList = newsList.Where(n => n.NotOil==0 &&
+                n.PublishedDate != null
+                && n.PublishedDate.ToMiladiInverse() > start &&
+            n.PublishedDate.ToMiladiInverse() <= end).ToList();
             }
 
 
-                foreach (var news in newsList)
+            foreach (var news in newsList)
+            {
+                if ( !evaluateds.Contains(news.Id))
                 {
                     var site = news.LinkUrl.Split("/");
                     OilNewsListDto dto = new OilNewsListDto()
@@ -186,10 +202,12 @@ namespace ReadAndAnalysis.App.Services.Implementations
                         Description = news.Description,
                         TitleUrl = site[2].ToString(),
                         CreateDate = news.CreateDate,
-                        PublishedDate = news.PublishedDate
+                        PublishedDate = news.PublishedDate,
+                      
                     };
                     list.Add(dto);
                 }
+            }
 
 
             return list;
@@ -340,6 +358,30 @@ namespace ReadAndAnalysis.App.Services.Implementations
             return await _context.NegativeReasons.ToListAsync();
         }
 
+        public async Task<List<NegativeOilDto>> GetNegativeOilNewsForSendingSms()
+        {
+            var list =  await _context.NegativeOilNewsForSendingSms.ToListAsync();
+            List<NegativeOilDto> dtos = new List<NegativeOilDto>();
+            foreach (var oil in list)
+            {
+                var news = await _context.NewsRssReeds.SingleAsync(n=>n.Id == oil.NewsId);
+                NegativeOilDto dto = new NegativeOilDto()
+                {
+                    Id = oil.Id,
+                    NewsId = news.Id,
+                    Description = news.Description,
+                    Title =news.Title
+                };
+                dtos.Add(dto);
+            }
+            return dtos;
+        }
+
+        public async Task<List<NotOilReason>> GetNotOilReasons()
+        {
+           return await _context.NotOilReasons.ToListAsync();
+        }
+
         public async Task<OilNewsDto> GetOilNews(long newsId)
         {
             var news = await _context.NewsRssReeds.SingleOrDefaultAsync(n => n.Id == newsId);
@@ -373,6 +415,25 @@ namespace ReadAndAnalysis.App.Services.Implementations
             return await _context.EvaluatedResults.AnyAsync(n => n.NewsId == newsId);
         }
 
+        public async Task NotOilNewsWithReason(long newsId, int reasonId, long userId)
+        {
+            var news = await _context.NewsRssReeds.SingleAsync(n => n.Id == newsId);
+            news.NotOil = reasonId;
+            news.UserIdThatMakeIdNotOil = userId;
+            _context.NewsRssReeds.Update(news);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SendSms(string mobile, string message)
+        {
+            Api sms = new Api("AiZrUW5JyMa5WHtEd+xkA21v9T30T6Rm3IgwE00TEkY");
+            //var res = await sms.SendSMSAsync(message, mobile, "30006708101010", DateTime.Now);
+            //send sms 
+            var res = await sms.SendSMSAsync(message, mobile, "30006708101010", DateTime.Now, "12345");
+            //send sms bulk
+            var result = res.Result;
+        }
+
         public async Task<List<OilNewsListDto>> ShowOilNewsByMainKey(long mainId)
         {
             List<OilNewsListDto> list = new List<OilNewsListDto>();
@@ -393,6 +454,44 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
             }
             return list;
+        }
+
+        public async Task AddToNegativeOilNewsForSend(long newsId, long userId)
+        {
+           
+            NegativeOilNewsForSendingSms negative = new NegativeOilNewsForSendingSms()
+            {
+                NewsId = newsId,
+                CreatedUserId = GetIpAddress.GetIp(),
+                CreatedBy = userId,
+                CreatedDate = DateTime.Now
+            };
+            await _context.NegativeOilNewsForSendingSms.AddAsync(negative);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> SendingSms()
+        {
+            try
+            {
+                var sendings = await _context.SendSms.ToListAsync();
+                sendings = sendings.Where(s => s.IsSended == false).ToList();
+                foreach (var sending in sendings)
+                {
+                    await SendSms(sending.Mobile, sending.SendedText);
+                    sending.IsSended = true;
+                    sending.SendDate = DateTime.Now;
+                    _context.SendSms.Update(sending);
+                    await _context.SaveChangesAsync();
+                }
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+                
+            }
         }
     }
 }

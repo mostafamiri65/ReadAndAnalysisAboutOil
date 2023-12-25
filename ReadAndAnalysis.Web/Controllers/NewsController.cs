@@ -42,6 +42,18 @@ namespace ReadAndAnalysis.Web.Controllers
             list = list.OrderBy(n => n.CreateDate).ToList();
             return View(list);
         }
+        public IActionResult NotOil(long newsId)
+        {
+            ViewBag.Id = newsId;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> NotOil(NotOil news)
+        {
+            await _newsService.DeleteOilNews(news.NewsId,User.GetUserId());
+            return RedirectToAction("ShowOilNews");
+        }
+
         public async Task<IActionResult> ShowNews(long newsId)
         {
             var keywords = await _newsService.GetAllUsedKeyWords(newsId);
@@ -60,15 +72,23 @@ namespace ReadAndAnalysis.Web.Controllers
             ViewData["source"] = source;
             var title = await _newsService.GetEvalutedFieldTitle(newsId);
             ViewData["titleEva"] = title;
+            var notOilReasons = await _newsService.GetNotOilReasons();
+            ViewData["NotOilReasons"] = notOilReasons;
             var news = await _newsService.GetOilNews(newsId);
             return View(news);
+        }
+        [HttpPost]
+        public async Task<IActionResult> NotOilReason(long newsId,int reasonId)
+        {
+            await _newsService.NotOilNewsWithReason(newsId,reasonId,User.GetUserId());
+            return RedirectToAction("ShowOilNews");
         }
         [HttpPost]
         public async Task<IActionResult> Show(long newsId, Guid fieldParent, long fieldchild,
             long? source, long estimate, long relevance)
         {
             bool isexist = await _newsService.CanAddEvalutedResult(newsId);
-            if (!isexist)
+            if (isexist)
             {
                 TempData[ErrorMessage] = "این خبر پردازش شده است.";
                 return RedirectToAction("ShowNews", new { newsId = newsId });
@@ -121,6 +141,17 @@ namespace ReadAndAnalysis.Web.Controllers
             var estimate = await _newsService.GetEstimateNews();
             ViewData["estimate"] = estimate;
             var list = await _newsService.GetEvalutedNews(startDate, endDate, estimateId);
+            return View(list);
+        }
+        public async Task<IActionResult> SendSms()
+        {
+            await _newsService.SendingSms();
+            return RedirectToAction("ShowEvaluteds");
+        }
+        public async Task<IActionResult> ShowNegativeForSms(long newsId)
+        {
+            await _newsService.AddToNegativeOilNewsForSend(newsId,User.GetUserId());
+            var list = await _newsService.GetNegativeOilNewsForSendingSms();
             return View(list);
         }
     }

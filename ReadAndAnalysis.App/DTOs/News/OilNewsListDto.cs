@@ -10,7 +10,7 @@ namespace ReadAndAnalysis.App.DTOs.News
     {
         public long Id { get; set; }
         public string? Title { get; set; }
-
+       
         public string? LinkUrl { get; set; }
         public string? PublishedDate { get; set; }
         public string? Description { get; set; }

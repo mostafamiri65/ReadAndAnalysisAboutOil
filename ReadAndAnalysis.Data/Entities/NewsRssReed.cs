@@ -43,5 +43,10 @@ public partial class NewsRssReed
 
     public bool? IsOil { get; set; }
 
+    public int NotOil { get; set; } = 0;
+
+    
+    public long? UserIdThatMakeIdNotOil { get; set; }
+
     public virtual ICollection<EvaluatedResult> EvaluatedResults { get; set; } = new List<EvaluatedResult>();
 }

@@ -1,0 +1,33 @@
+﻿@model List<NegativeOilDto>
+@{
+    ViewData["Title"] = "ShowNegativeForSms";
+}
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped" id="data-table">
+        <thead>
+            <tr>
+
+                <th>عنوان</th>
+                <th>توضیحات</th>
+               
+                <td>عملیات</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderByDescending(c => c.Id))
+            {
+
+                <tr>
+                    <td>@item.Title.ShowTitle()</td>
+                    <td>@item.Description.ShowInTable()</td>
+                    <td></td>
+                   
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div><!-- /.table-responsive -->
+<div class="col-4 offset-4 d-grid gap-2">
+    <a class="btn btn-primary" asp-action="SendSms">ارسال اس ام اس ها</a>
+</div>

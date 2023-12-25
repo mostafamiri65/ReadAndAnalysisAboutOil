@@ -484,36 +484,17 @@
         <script>
             Chart.defaults.global.defaultFontFamily = "IranSans";
 
-            var NotOilNews = ["@(sps[0].NotOilNewsCount)", "@(sps[1].NotOilNewsCount)", "@(sps[2].NotOilNewsCount)", "@(sps[3].NotOilNewsCount)",
-                "@(sps[4].NotOilNewsCount)", "@(sps[5].NotOilNewsCount)", "@(sps[6].NotOilNewsCount)", "@(sps[7].NotOilNewsCount)",
-                "@(sps[8].NotOilNewsCount)", "@(sps[9].NotOilNewsCount)", "@(sps[10].NotOilNewsCount)", "@(sps[11].NotOilNewsCount)",
-                "@(sps[12].NotOilNewsCount)", "@(sps[13].NotOilNewsCount)", "@(sps[14].NotOilNewsCount)", "@(sps[15].NotOilNewsCount)",
-                "@(sps[16].NotOilNewsCount)", "@(sps[17].NotOilNewsCount)", "@(sps[18].NotOilNewsCount)", "@(sps[19].NotOilNewsCount)",
-                "@(sps[20].NotOilNewsCount)", "@(sps[21].NotOilNewsCount)", "@(sps[22].NotOilNewsCount)", "@(sps[23].NotOilNewsCount)",
-                "@(sps[24].NotOilNewsCount)", "@(sps[25].NotOilNewsCount)", "@(sps[26].NotOilNewsCount)", "@(sps[27].NotOilNewsCount)",
-                "@(sps[28].NotOilNewsCount)", "@(sps[29].NotOilNewsCount)", "@(sps[30].NotOilNewsCount)", "@(sps[31].NotOilNewsCount)",
-                "@(sps[32].NotOilNewsCount)", "@(sps[33].NotOilNewsCount)", "@(sps[34].NotOilNewsCount)", "@(sps[35].NotOilNewsCount)"
+            var NotOilNews = ["@(sps[0]?.NotOilNewsCount)", "@(sps[1]?.NotOilNewsCount)", "@(sps[2]?.NotOilNewsCount)", "@(sps[3]?.NotOilNewsCount)",
+                "@(sps[4]?.NotOilNewsCount)", "@(sps[5]?.NotOilNewsCount)", "@(sps[6]?.NotOilNewsCount)", "@(sps[7]?.NotOilNewsCount)",
+               
             ];
             var ChartLabels = ["@(sps[0].ShownDate)", "@(sps[1].ShownDate)", "@(sps[2].ShownDate)", "@(sps[3].ShownDate)",
-                "@(sps[4].ShownDate)", "@(sps[5].ShownDate)", "@(sps[6].ShownDate)", "@(sps[7].ShownDate)",
-                "@(sps[8].ShownDate)", "@(sps[9].ShownDate)", "@(sps[10].ShownDate)", "@(sps[11].ShownDate)",
-                "@(sps[12].ShownDate)", "@(sps[13].ShownDate)", "@(sps[14].ShownDate)", "@(sps[15].ShownDate)",
-                "@(sps[16].ShownDate)", "@(sps[17].ShownDate)", "@(sps[18].ShownDate)", "@(sps[19].ShownDate)",
-                "@(sps[20].ShownDate)", "@(sps[21].ShownDate)", "@(sps[22].ShownDate)", "@(sps[23].ShownDate)",
-                "@(sps[24].ShownDate)", "@(sps[25].ShownDate)", "@(sps[26].ShownDate)", "@(sps[27].ShownDate)",
-                "@(sps[28].ShownDate)", "@(sps[29].ShownDate)", "@(sps[30].ShownDate)", "@(sps[31].ShownDate)",
-                "@(sps[32].ShownDate)", "@(sps[33].ShownDate)", "@(sps[34].ShownDate)", "@(sps[35].ShownDate)"
+                "@(sps[4]?.ShownDate)", "@(sps[5]?.ShownDate)", "@(sps[6]?.ShownDate)", "@(sps[7]?.ShownDate)",
+              
             ];
             var oilNews = ["@(sps[0].OilNewsCount)", "@(sps[1].OilNewsCount)", "@(sps[2].OilNewsCount)", "@(sps[3].OilNewsCount)",
-                "@(sps[4].OilNewsCount)", "@(sps[5].OilNewsCount)", "@(sps[6].OilNewsCount)", "@(sps[7].OilNewsCount)",
-                "@(sps[8].OilNewsCount)", "@(sps[9].OilNewsCount)", "@(sps[10].OilNewsCount)", "@(sps[11].OilNewsCount)",
-                "@(sps[12].OilNewsCount)", "@(sps[13].OilNewsCount)", "@(sps[14].OilNewsCount)", "@(sps[15].OilNewsCount)",
-                "@(sps[16].OilNewsCount)", "@(sps[17].OilNewsCount)", "@(sps[18].OilNewsCount)", "@(sps[19].OilNewsCount)",
-                "@(sps[20].OilNewsCount)", "@(sps[21].OilNewsCount)", "@(sps[22].OilNewsCount)", "@(sps[23].OilNewsCount)",
-                "@(sps[24].OilNewsCount)", "@(sps[25].OilNewsCount)", "@(sps[26].OilNewsCount)", "@(sps[27].OilNewsCount)",
-                "@(sps[28].OilNewsCount)", "@(sps[29].OilNewsCount)", "@(sps[30].OilNewsCount)", "@(sps[31].OilNewsCount)",
-                "@(sps[32].OilNewsCount)", "@(sps[33].OilNewsCount)", "@(sps[34].OilNewsCount)", "@(sps[35].OilNewsCount)"
-            ];
+                "@(sps[4]?.OilNewsCount)", "@(sps[5]?.OilNewsCount)", "@(sps[6]?.OilNewsCount)", "@(sps[7]?.OilNewsCount)",
+                ];
 
             var config1 = {
                 type: "line",

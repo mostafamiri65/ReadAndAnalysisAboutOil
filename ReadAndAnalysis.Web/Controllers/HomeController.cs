@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 using Newtonsoft.Json;
 using ReadAndAnalysis.App.DTOs.News;
 using ReadAndAnalysis.App.Extensions;
 using ReadAndAnalysis.App.Services.Interfaces;
 using ReadAndAnalysis.Web.Models;
+using RestSharp;
 using System.Diagnostics;
 
 namespace ReadAndAnalysis.Web.Controllers
@@ -18,7 +20,7 @@ namespace ReadAndAnalysis.Web.Controllers
             _homeService = homeService;
         }
 
-        public async Task<IActionResult> Index(string? start, string end, int? relevanceId)
+        public async Task<IActionResult> Index(string? start, string? end, int? relevanceId)
         {
             var isSecrotary = await _homeService.IsSecretory(User.GetUserId());
             if (isSecrotary)
@@ -81,6 +83,7 @@ namespace ReadAndAnalysis.Web.Controllers
 
             return View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

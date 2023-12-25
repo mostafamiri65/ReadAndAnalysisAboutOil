@@ -14,7 +14,8 @@ public partial class TxtPrcContext : DbContext
         : base(options)
     {
     }
-
+    public virtual DbSet<NegativeOilNewsForSendingSms> NegativeOilNewsForSendingSms { get; set; }
+    public virtual DbSet<SendSms> SendSms { get; set; }
     public virtual DbSet<EstimateNews> EstimateNews { get; set; }
 
     public virtual DbSet<EvaluatedResult> EvaluatedResults { get; set; }
@@ -58,12 +59,13 @@ public partial class TxtPrcContext : DbContext
     public virtual DbSet<TbUserRole> TbUserRoles { get; set; }
 
     public virtual DbSet<TelegramChannel> TelegramChannels { get; set; }
-
+    public virtual DbSet<NotOilReason> NotOilReasons { get; set; }
     public virtual DbSet<TelegramPost> TelegramPosts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=192.168.1.37;Database=TxtPrc;User Id = sa;Password = M13961221@;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer
+        ("Server=192.168.1.37;Database=TxtPrc2;User Id = sa;Password = M13961221@;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -226,7 +228,7 @@ public partial class TxtPrcContext : DbContext
         modelBuilder.Entity<NewsRssReed>(entity =>
         {
             entity.ToTable("NewsRssReed");
-
+            entity.Property(e => e.NotOil).HasDefaultValueSql("0");
             entity.Property(e => e.Author).HasMaxLength(100);
             entity.Property(e => e.Category).HasMaxLength(100);
             entity.Property(e => e.CreateDate).HasDefaultValueSql("(getdate())");
