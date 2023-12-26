@@ -182,7 +182,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
             var newsList = await _context.NewsRssReeds.Where(n => (bool)n.IsOil).ToListAsync();
             if (starDate != null && endDate != null)
             {
-                newsList = newsList.Where(n => n.NotOil==0 &&
+                newsList = newsList.Where(n => n.NotOil == 0 &&
                 n.PublishedDate != null
                 && n.PublishedDate.ToMiladiInverse() > start &&
             n.PublishedDate.ToMiladiInverse() <= end).ToList();
@@ -191,7 +191,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
             foreach (var news in newsList)
             {
-                if ( !evaluateds.Contains(news.Id))
+                if (!evaluateds.Contains(news.Id))
                 {
                     var site = news.LinkUrl.Split("/");
                     OilNewsListDto dto = new OilNewsListDto()
@@ -203,7 +203,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
                         TitleUrl = site[2].ToString(),
                         CreateDate = news.CreateDate,
                         PublishedDate = news.PublishedDate,
-                      
+
                     };
                     list.Add(dto);
                 }
@@ -287,9 +287,14 @@ namespace ReadAndAnalysis.App.Services.Implementations
             foreach (var item in evaluteds)
             {
                 var news = await _context.NewsRssReeds.SingleAsync(r => r.Id == item.NewsId);
+                var isSendForSms = await _context.NegativeOilNewsForSendingSms.SingleOrDefaultAsync(s => s.NewsId == news.Id);
+                bool isSended = false;
+                if (isSendForSms != null)
+                    isSended = true;
                 var site = news.LinkUrl.Split("/");
                 EvalutedListDto dto = new EvalutedListDto()
                 {
+
                     Id = news.Id,
                     Title = news.Title,
                     LinkUrl = news.LinkUrl,
@@ -297,11 +302,15 @@ namespace ReadAndAnalysis.App.Services.Implementations
                     TitleUrl = site[2].ToString(),
                     PublishedDate = news.PublishedDate,
                     EstimateId = item.EstimateId,
+                    //Estimate =  item.Estimate?.Name,
                     FieldOfUseId = item.FieldOfUseId,
+                    FieldOfUse = _context.FieldOfUse.SingleOrDefaultAsync(s => s.Id == item.FieldOfUseId).Result?.Name,
                     StatisticalSourceId = item.StatisticalSourceId,
-
+                    StatisticalSource = _context.StatisticalSources.SingleOrDefaultAsync(s => s.Id == item.StatisticalSourceId).Result?.Name,
+                    IsSendForSms = isSended
                 };
                 list.Add(dto);
+
             }
             return list;
         }
@@ -360,17 +369,17 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<List<NegativeOilDto>> GetNegativeOilNewsForSendingSms()
         {
-            var list =  await _context.NegativeOilNewsForSendingSms.ToListAsync();
+            var list = await _context.NegativeOilNewsForSendingSms.ToListAsync();
             List<NegativeOilDto> dtos = new List<NegativeOilDto>();
             foreach (var oil in list)
             {
-                var news = await _context.NewsRssReeds.SingleAsync(n=>n.Id == oil.NewsId);
+                var news = await _context.NewsRssReeds.SingleAsync(n => n.Id == oil.NewsId);
                 NegativeOilDto dto = new NegativeOilDto()
                 {
                     Id = oil.Id,
                     NewsId = news.Id,
                     Description = news.Description,
-                    Title =news.Title
+                    Title = news.Title
                 };
                 dtos.Add(dto);
             }
@@ -379,7 +388,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<List<NotOilReason>> GetNotOilReasons()
         {
-           return await _context.NotOilReasons.ToListAsync();
+            return await _context.NotOilReasons.ToListAsync();
         }
 
         public async Task<OilNewsDto> GetOilNews(long newsId)
@@ -456,12 +465,13 @@ namespace ReadAndAnalysis.App.Services.Implementations
             return list;
         }
 
-        public async Task AddToNegativeOilNewsForSend(long newsId, long userId)
+        public async Task AddToNegativeOilNewsForSend(long newsId, long userId, int typeId)
         {
-           
+
             NegativeOilNewsForSendingSms negative = new NegativeOilNewsForSendingSms()
             {
                 NewsId = newsId,
+                TypeId = typeId,
                 CreatedUserId = GetIpAddress.GetIp(),
                 CreatedBy = userId,
                 CreatedDate = DateTime.Now
@@ -490,8 +500,13 @@ namespace ReadAndAnalysis.App.Services.Implementations
             catch (Exception)
             {
                 return false;
-                
+
             }
+        }
+
+        public async Task<List<SendingSmsType>> GetSendingSmsTypes()
+        {
+          return await _context.SendingSmsTypes.ToListAsync();
         }
     }
 }

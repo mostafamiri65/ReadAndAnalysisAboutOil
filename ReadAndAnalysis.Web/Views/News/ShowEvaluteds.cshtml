@@ -21,24 +21,25 @@
 
 
 <form asp-action="ShowEvaluteds" method="get">
+
     <div class="col-12 row ">
         <div class="col-3 row">
-         @*   <div class="col-3">
-                <label>تاریخ شروع</label>
+           <div class="col-3">
+                <label>از تاریخ انتشار</label>
             </div>
             <div class="col-9">
                 <input type="text" autocomplete="off" id="start" name="startDate"
                        class="form-control" />
-            </div>*@
+            </div>
         </div>
         <div class="col-3 row">
-           @* <div class="col-3">
-                <label>تاریخ پایان</label>
+           <div class="col-3">
+                <label>تا تاریخ انتشار</label>
             </div>
             <div class="col-9">
                 <input type="text" autocomplete="off" id="end" name="endDate"
                        class="form-control" />
-            </div>*@
+            </div>
         </div>
         <div class="col-3 row">
             <div class="col-sm-12 col-md-2">
@@ -62,7 +63,15 @@
 
     </div>
 </form>
-
+<div class="col-12 text-center">
+    @if (ViewBag.Start != null && ViewBag.EndDate != null)
+    {
+        <h2>
+        بازه نمایش بین @ViewBag.Start تا @ViewBag.EndDate
+    </h2>  
+    }
+  
+</div>
 <div class="table-responsive">
     <table class="table table-bordered table-hover table-striped" id="data-table">
         <thead>
@@ -70,8 +79,11 @@
 
                 <th>عنوان</th>
                 <th>توضیحات</th>
+                <th>ارسال برای پیامک</th>
                 <th>ادرس سایت </th>
-
+                <th>حوزه</th>
+                <th>ماخذ آماری</th>
+                <th>تاریخ انتشار خبر</th>
                 <td>عملیات</td>
             </tr>
         </thead>
@@ -90,15 +102,22 @@
                 <tr class="@((positive) ? "bg-success" : "") @((negative)?"bg-danger":"")">
                     <td>@item.Title.ShowTitle()</td>
                     <td>@item.Description.ShowInTable()</td>
+                    <td>
+                        @if(item.IsSendForSms){<span>ارسال شده است</span>}
+                        else{<span>ارسال نشده است</span>}
 
+                    </td>
                     <td>@item.TitleUrl</td>
 
+                    <td>@item.FieldOfUse.ShowTitle()</td>
+                    <td>@item.StatisticalSource.ShowTitle()</td>
+                    <td>@item.PublishedDate.ToMiladiInverse().ToShamsi()</td>
                     <td>
-                        @if(negative){
-                            <a asp-action="ShowNegativeForSms" asp-route-newsId="@item.Id" class="btn btn-warning btn-round">ارسال برای اس ام اس</a>
-                        }
+
+                        <a onclick="Send(@item.Id)" class="btn btn-warning p-1">ارسال اس</a>
+                       
                         <a asp-controller="News"
-                           asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round">نمایش</a>
+                           asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round p-1">نمایش</a>
                     </td>
                 </tr>
             }
@@ -114,7 +133,43 @@
         </p>
     </div>
 </div><!-- /.table-responsive -->
+
+
+
+<div id="modal" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="title">نمونه مودال عمومی</h4>
+            </div><!-- /.modal-header -->
+            <div class="modal-body" id="body">
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+                <p>...</p>
+            </div><!-- /.modal-body -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 @section Script{
+
+    <script>
+        function Send(id) {
+            $.ajax({
+                url: "/News/ShowNegativeForSms",
+                type: "Get",
+                data: { newsId: id }
+            }).done(function (result) {
+                $('#modal').modal('show');
+                $('#title').html(' ارسال برای پیامک ...');
+                $('#body').html(result);
+            });
+        }
+    </script>
     <script>
         //var tableMain = $('#data-table').DataTable({
         //    "columnDefs": [{

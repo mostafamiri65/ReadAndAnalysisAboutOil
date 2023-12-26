@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReadAndAnalysis.Data.Entities;
 
@@ -11,9 +12,11 @@ using ReadAndAnalysis.Data.Entities;
 namespace ReadAndAnalysis.Data.Migrations
 {
     [DbContext(typeof(TxtPrcContext))]
-    partial class TxtPrcContextModelSnapshot : ModelSnapshot
+    [Migration("20231226034723_mig_SendingType")]
+    partial class mig_SendingType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -422,9 +425,6 @@ namespace ReadAndAnalysis.Data.Migrations
 
                     b.Property<long>("NewsId")
                         .HasColumnType("bigint");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -878,22 +878,6 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SendSms");
-                });
-
-            modelBuilder.Entity("ReadAndAnalysis.Data.Entities.SendingSmsType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SendingSmsTypes");
                 });
 
             modelBuilder.Entity("ReadAndAnalysis.Data.Entities.StatisticalSource", b =>

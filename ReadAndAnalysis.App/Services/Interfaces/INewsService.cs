@@ -42,7 +42,8 @@ namespace ReadAndAnalysis.App.Services.Interfaces
         Task NotOilNewsWithReason(long newsId, int reasonId, long userId);
         Task SendSms(string mobile, string message);
         Task<List<NegativeOilDto>> GetNegativeOilNewsForSendingSms();
-        Task AddToNegativeOilNewsForSend(long newsId, long userId);
+        Task AddToNegativeOilNewsForSend(long newsId, long userId,int typeId);
         Task<bool> SendingSms();
+        Task<List<SendingSmsType>> GetSendingSmsTypes();
     }
 }

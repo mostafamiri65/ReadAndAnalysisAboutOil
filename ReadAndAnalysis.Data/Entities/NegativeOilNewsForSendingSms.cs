@@ -10,6 +10,7 @@ namespace ReadAndAnalysis.Data.Entities
     {
         public long Id { get; set; }
         public long NewsId { get; set; }
+        public int TypeId { get; set; }
         public long CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? CreatedUserId { get; set; }

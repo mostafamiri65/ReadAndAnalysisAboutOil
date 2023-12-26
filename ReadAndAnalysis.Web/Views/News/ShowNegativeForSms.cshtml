@@ -1,33 +1,22 @@
-﻿@model List<NegativeOilDto>
+﻿@using ReadAndAnalysis.Data.Entities
+@model List<SendingSmsType>
 @{
     ViewData["Title"] = "ShowNegativeForSms";
+    Layout = null;
 }
-<div class="table-responsive">
-    <table class="table table-bordered table-hover table-striped" id="data-table">
-        <thead>
-            <tr>
-
-                <th>عنوان</th>
-                <th>توضیحات</th>
-               
-                <td>عملیات</td>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.OrderByDescending(c => c.Id))
+<form asp-action="ShowNegativeForSms" method="post">
+    <input name="newsId" type="hidden" value="@ViewBag.NewsId" />
+    <div>
+        <label>گروه بندی برای ارسال پیام</label>
+        <select class="form-select" name="typeId">
+            <option>انتخاب کنید</option>
+            @foreach(var item in Model)
             {
-
-                <tr>
-                    <td>@item.Title.ShowTitle()</td>
-                    <td>@item.Description.ShowInTable()</td>
-                    <td></td>
-                   
-                </tr>
+                <option value="@item.Id">@item.Title</option>
             }
-
-        </tbody>
-    </table>
-</div><!-- /.table-responsive -->
-<div class="col-4 offset-4 d-grid gap-2">
-    <a class="btn btn-primary" asp-action="SendSms">ارسال اس ام اس ها</a>
-</div>
+        </select>
+    </div>
+    <div class="mt-3 col-4 offset-4 d-grid gap-2">
+        <input type="submit" value="ثبت" class="btn btn-success" />
+    </div>
+</form>

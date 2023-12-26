@@ -140,6 +140,8 @@ namespace ReadAndAnalysis.Web.Controllers
         {
             var estimate = await _newsService.GetEstimateNews();
             ViewData["estimate"] = estimate;
+            ViewBag.Start = startDate;
+            ViewBag.EndDate = endDate;
             var list = await _newsService.GetEvalutedNews(startDate, endDate, estimateId);
             return View(list);
         }
@@ -148,11 +150,19 @@ namespace ReadAndAnalysis.Web.Controllers
             await _newsService.SendingSms();
             return RedirectToAction("ShowEvaluteds");
         }
+        [HttpGet]
         public async Task<IActionResult> ShowNegativeForSms(long newsId)
         {
-            await _newsService.AddToNegativeOilNewsForSend(newsId,User.GetUserId());
-            var list = await _newsService.GetNegativeOilNewsForSendingSms();
+           ViewBag.NewsId = newsId;
+            var list = await _newsService.GetSendingSmsTypes();
             return View(list);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ShowNegativeForSms(long newsId,int typeId)
+        {
+           
+            await _newsService.AddToNegativeOilNewsForSend(newsId,User.GetUserId(),typeId);
+            return RedirectToAction("ShowEvaluteds");
         }
     }
 }
