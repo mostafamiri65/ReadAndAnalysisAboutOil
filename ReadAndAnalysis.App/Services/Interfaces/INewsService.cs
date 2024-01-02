@@ -45,5 +45,14 @@ namespace ReadAndAnalysis.App.Services.Interfaces
         Task AddToNegativeOilNewsForSend(long newsId, long userId,int typeId);
         Task<bool> SendingSms();
         Task<List<SendingSmsType>> GetSendingSmsTypes();
+        Task<List<SelectedNewsDto>> GetSelectedNewsTypes();
+        Task SendNextLevel(long negativeSmsId,long userId);
+        Task ViewWithNoAction(long negativeSmsId, long userId);
+        Task SendNextLevelWithUrl(string key);
+        Task<OilNewsDto> GetNewsByKey(string key);
+        Task<bool> IsNewsSendedSms(string  key);
+        Task CreateNewsAsPrivateMode(CreateNewsAsPrivateDto create, long userId);
+        Task<List<OilNewsDto>> GetLikeNews(long newsId);
+        Task UpdateLikeNews(long newsId, List<long>likesIds, long userId);
     }
 }

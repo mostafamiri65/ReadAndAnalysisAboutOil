@@ -8,6 +8,7 @@ namespace ReadAndAnalysis.App.DTOs.News
 {
     public class EvalutedListDto
     {
+        public long EvalutedId { get; set; }
         public long Id { get; set; }
         public string? Title { get; set; }
         public long EstimateId { get; set; }

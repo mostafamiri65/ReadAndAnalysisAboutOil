@@ -1,0 +1,49 @@
+﻿@model List<SelectedNewsDto>
+@{
+    ViewData["Title"] = "اخبار برای ارسال پیام";
+}
+
+
+
+    <div class="table-responsive mt-4">
+     
+
+        <table class="table table-bordered table-hover table-striped" id="data-table">
+            <thead>
+                <tr>
+                    <th>نوع مشخص شده</th>
+                    <th>عنوان</th>
+                    <th>توضیحات</th>
+                    <th>ادرس لینک کوتاه </th>
+                    <th>تاریخ انتشار</th>
+                    <td>عملیات</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderByDescending(c => c.NewsId))
+                {
+                 
+                    <tr >
+                        <td>
+                            @item.TypeTitle
+                        </td>
+                        <td>@item.Title.ShowTitle()</td>
+                        <td>@item.Description.ShowInTable()</td>
+
+                        <td>@item.LinkeGenerated</td>
+                        <td>@item.PublishedDate.ToMiladiInverse().ToShamsi()</td>
+
+                        <td>
+                            <a href="@item.Url" target="_blank" class="btn btn-info btn-round">نمایش</a>
+                            <a asp-action="SendNexLevel" asp-route-id="@item.Id" class="btn btn-warning ">ارسال برای مقام بالا</a>
+                            <a asp-action="ViewWithNoAction" asp-route-id="@item.Id" class="btn btn-success">مشاهده بدون اقدام</a>
+
+
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    

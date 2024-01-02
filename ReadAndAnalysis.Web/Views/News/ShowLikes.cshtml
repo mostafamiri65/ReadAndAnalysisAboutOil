@@ -1,0 +1,55 @@
+﻿@model List<OilNewsDto>
+@{
+    ViewData["Title"] = "خبرهای مشابه";
+}
+
+<div class="col-4 offset-4 d-grid gap-2">
+    <a class="btn btn-danger" asp-action="ShowEvaluteds">خبرهای ارزیابی شده</a>
+</div>
+
+<div class="mt-2 alert alert-info">
+    <p class=" fw-bold">
+        اگر در تعیین خبرهای مشابه مشکلی پیش آده تیک مربوط به همان گزینه را برداشته و در نهایت ثبت اطلاعات را بفشارید
+    </p>
+</div>
+<form asp-action="ShowLikes" method="post">
+    <input type="hidden" value="@ViewBag.newsId" name="newsId" />
+<div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped" id="data-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>عنوان</th>
+                <th>توضیحات</th>
+                <th>ادرس سایت </th>
+                <th>تاریخ</th>
+                <td>عملیات</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderByDescending(c => c.Id))
+            {
+
+                <tr>
+                    <td>
+                            <input type="checkbox" value="@item.Id" name="ids" checked />
+                    </td>
+                    <td>@item.Title.ShowTitle()</td>
+                    <td>@item.Description.ShowInTable()</td>
+
+                    <td>@item.LinkUrl.ShowTitle()</td>
+                    <td>@item.PublishedDate.ToMiladiInverse().ToShamsi()</td>
+                   <td>
+                        <a href="@item.LinkUrl" target="_blank" class="btn btn-info btn-round">نمایش خبر</a>
+                   </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div><!-- /.table-responsive -->
+
+<div class="col-4 offset-4 d-grid gap-2">
+    <input type="submit" class="btn btn-dark" value="ثبت اطلاعات" />
+</div>
+</form>

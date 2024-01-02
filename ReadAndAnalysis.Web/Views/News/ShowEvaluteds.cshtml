@@ -19,7 +19,7 @@
     <script src="/assets/js/pages/calendar-kama.js"></script>
 }
 
-
+<p>تعداد کل : @ViewBag.Count</p>
 <form asp-action="ShowEvaluteds" method="get">
 
     <div class="col-12 row ">
@@ -114,10 +114,12 @@
                     <td>@item.PublishedDate.ToMiladiInverse().ToShamsi()</td>
                     <td>
 
-                        <a onclick="Send(@item.Id)" class="btn btn-warning p-1">ارسال اس</a>
+                        <a onclick="Send(@item.Id)" class="btn btn-warning ">ارسال پیام</a>
                        
                         <a asp-controller="News"
                            asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round p-1">نمایش</a>
+                        <a class="btn btn-dark " asp-action="ShowLikes" asp-route-newsId="@item.Id">خبرمشابه</a>
+
                     </td>
                 </tr>
             }

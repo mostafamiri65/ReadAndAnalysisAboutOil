@@ -1,6 +1,8 @@
-﻿@model IEnumerable<OilNewsListDto>
+﻿@using ReadAndAnalysis.Data.Entities
+@model IEnumerable<OilNewsListDto>
 @{
     ViewData["Title"] = "خبرهای نفتی";
+    List<NotOilReason>? reasons = ViewData["NotOilReasons"] as List<NotOilReason>;
 
 }
 @section CssForThis{
@@ -55,14 +57,20 @@
     </div>
 </form>
 <div class="table-responsive">
+    <form asp-action="RemoveOilN">
+
+    
     <table class="table table-bordered table-hover table-striped" id="data-table">
         <thead>
             <tr>
-
+<th></th>
                 <th>عنوان</th>
                 <th>توضیحات</th>
                 <th>ادرس سایت </th>
                 <th>تاریخ</th>
+                <th>
+                    خبر نفتی نیست ؟
+                </th>
                 <td>عملیات</td>
             </tr>
         </thead>
@@ -71,11 +79,28 @@
             {
                
                 <tr  >
+                    <td>
+                        <input type="checkbox" value="@item.Id" name="checkedId" class="checkbox" />
+                    </td>
                     <td>@item.Title.ShowTitle()</td>
                     <td>@item.Description.ShowInTable()</td>
 
                     <td>@item.TitleUrl</td>
                     <td>@item.PublishedDate.ToMiladiInverse().ToShamsi()</td>
+                    <td>
+                        <form method="post" asp-action="NotOilFromList">
+                            <input type="hidden" name="newsId" value="@item.Id" />
+                            <label>دلیل</label>
+                            <select name="reasonId" class="form-select" required>
+                                <option>انتخاب کنید</option>
+                                @foreach (var items in reasons)
+                                {
+                                    <option value="@items.Id">@items.Reason</option>
+                                }
+                            </select>
+                            <input type="submit" class="btn btn-sm btn-danger" value="ثبت" />
+                        </form>
+                    </td>
                     <td>
                         <a asp-controller="News"
                            asp-action="ShowNews" asp-route-newsId="@item.Id" target="_blank" class="btn btn-info btn-round">نمایش</a>
@@ -85,6 +110,20 @@
 
         </tbody>
     </table>
+    <select name="typeReasonId" class="form-select">
+            <option>انتخاب کنید</option>
+            @foreach (var items in reasons)
+            {
+                <option value="@items.Id">@items.Reason</option>
+
+            }
+    </select>
+    <div class="col-12">
+        <div class="col-4 offset-4 d-grid gap-2">
+            <input type="submit" value="ارسال" class="btn btn-success" />
+        </div>
+    </div>
+</form>
 </div><!-- /.table-responsive -->
 @section Script{
     <script>

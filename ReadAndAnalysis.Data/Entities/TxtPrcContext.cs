@@ -14,6 +14,7 @@ public partial class TxtPrcContext : DbContext
         : base(options)
     {
     }
+    public DbSet<NewsLike> NewsLikes { get; set; }
     public DbSet<SendingSmsType> SendingSmsTypes { get; set; }
     public virtual DbSet<NegativeOilNewsForSendingSms> NegativeOilNewsForSendingSms { get; set; }
     public virtual DbSet<SendSms> SendSms { get; set; }

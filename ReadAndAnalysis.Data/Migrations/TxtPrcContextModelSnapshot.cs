@@ -423,8 +423,21 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.Property<long>("NewsId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime?>("SendDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SendedLevel")
+                        .HasColumnType("int");
+
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UniqueCode")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<long?>("UserSendId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -557,6 +570,40 @@ namespace ReadAndAnalysis.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NewsInsertedsCmd", (string)null);
+                });
+
+            modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NewsLike", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IsDelete")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("NewsId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("NewsLinkeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UserModifiedId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsLikes");
                 });
 
             modelBuilder.Entity("ReadAndAnalysis.Data.Entities.NewsRelevance", b =>
@@ -1032,6 +1079,9 @@ namespace ReadAndAnalysis.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("(newid())");
+
+                    b.Property<bool>("IsPrivateInList")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Mobile")
                         .HasMaxLength(20)

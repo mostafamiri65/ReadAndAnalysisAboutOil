@@ -91,7 +91,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
         public async Task<List<UsersDto>> GetAllUsers()
         {
             List<UsersDto> list = new List<UsersDto>();
-            var users = await _context.TbUsers.ToListAsync();
+            var users = await _context.TbUsers.Where(u=>!u.IsPrivateInList).ToListAsync();
             foreach (var user in users)
             {
                 UsersDto dto = new UsersDto()

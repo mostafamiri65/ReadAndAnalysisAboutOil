@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendSmsByKey", "SendSmsByKey.csproj", "{54C86254-F8A9-4033-9CA5-B360AF74754D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54C86254-F8A9-4033-9CA5-B360AF74754D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54C86254-F8A9-4033-9CA5-B360AF74754D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54C86254-F8A9-4033-9CA5-B360AF74754D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54C86254-F8A9-4033-9CA5-B360AF74754D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB675F69-1C7E-4879-B51D-8D7863CC7B79}
+	EndGlobalSection
+EndGlobal

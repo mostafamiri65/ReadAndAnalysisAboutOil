@@ -1,0 +1,160 @@
+﻿@using ReadAndAnalysis.Data.Entities
+@model CreateNewsAsPrivateDto
+@{
+    ViewData["Title"] = "ارسال خبر تعریف نشده";
+    List<SendingSmsType>? list = ViewData["Types"] as List<SendingSmsType>;
+    List<NewsRelevance>? relevanes = ViewData["Relevances"] as List<NewsRelevance>;
+    List<EstimateNews>? estimates = ViewData["estimate"] as List<EstimateNews>;
+    List<FieldOfUse>? fields = ViewData["fields"] as List<FieldOfUse>;
+    List<StatisticalSource>? sources = ViewData["source"] as List<StatisticalSource>;
+
+}
+
+@section CssForThis {
+    <link href="/assets/plugins/kamadatepicker/kamadatepicker.min.css" rel="stylesheet">
+    @*  <link href="/assets/plugins/data-table/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet">
+*@
+}
+@section ToperLink {
+    <a href="#">لیست اخبار</a>
+}
+@section PluginForThis {
+    @*    <script src="/assets/plugins/data-table/js/jquery.dataTables.min.js"></script>
+*@
+    <script src="/assets/plugins/kamadatepicker/kamadatepicker.min.js"></script>
+    <script src="/assets/js/pages/calendar-kama.js"></script>
+}
+
+<div class="col-12">
+    <form asp-action="SendAsPrivate" method="post">
+        <div class="row">
+            <div class="col-lg-6 col-md-12 mb-2 form-group">
+                <label>عنوان خبر</label>
+                <input class="form-control" asp-for="Title" autocomplete="off" required />
+            </div>
+
+            <div class="col-lg-6 col-md-12 mb-2 form-group">
+                <label>لینک خبر</label>
+                <input class="form-control" asp-for="LinkUrl" autocomplete="off" required />
+            </div>
+
+            <div class="col-lg-6 col-md-12 mb-2 form-group">
+                <label>تاریخ انتشار خبر</label>
+                <input class="form-control" asp-for="PublishedDate" autocomplete="off" required />
+            </div>
+            <div class="col-lg-6 col-md-12 mb-2 form-group">
+                <label>اهمیت خبر</label>
+                <select asp-for="TypeId" class="form-select">
+                    <option>انتخاب کنید</option>
+                    @foreach (var item in list)
+                    {
+                        <option value="@item.Id">@item.Title</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-lg-12 col-md-12 mb-2 form-group">
+                <label>توضیحات کوتاه خبر</label>
+                <textarea class="form-control" asp-for="Description"></textarea>
+            </div>
+        </div>
+        <div>
+            <div class="col-12 row mb-2">
+                <div class="col-lg-6 col-md-12 mb-2">
+                    <label>حوزه مورد استفاده گزارش و خبر</label>
+
+                    <select class="form-control form-select" name="fieldParent" id="parentField" onchange="ChangeParent()" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in fields.Where(f => f.ParentId == null))
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+
+                </div>
+
+                <div class="col-lg-6 col-md-12 mb-2">
+                    <label>انتخاب حوزه</label>
+                    <div>
+                        <div id="shownChild">
+                            <select class="form-control">
+                                <option value="">انتخاب کنید</option>
+
+                            </select>
+                        </div>
+                        <div id="child"></div>
+
+                    </div>
+                   
+                </div>
+
+            </div>
+
+            <div class="col-12 row mb-2">
+                <div class="col-lg-6 col-md-12 mb-2">
+
+                    <label>مرتبط بودن خبر</label>
+
+                    <select class="form-control form-select" asp-for="RelevanceId" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in relevanes)
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-2">
+                    <label>ماخذ آماری (گزارشات آماری )</label>
+                    <select class="form-control form-select" asp-for="StatisticalSourceId" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in sources)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-12 row mb-2">
+
+                <div class="col-lg-6 col-md-12 mb-2">
+                    <label>نتیجه کلی خبر</label>
+                    <select class="form-control form-select" asp-for="EstimateId" required>
+                        <option value="">انتخاب کنید</option>
+                        @foreach (var item in estimates)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-4 offset-4 d-grid gap-2">
+            <input type="submit" value="ثبت و ارسال" class="btn btn-success" />
+        </div>
+    </form>
+</div>
+
+@section Script {
+    <script>
+        function ChangeParent() {
+            $("#shownChild").hide();
+            var id = $("#parentField").val();
+            console.log(id);
+            $("#child").load("/News/GetFieldOfUse", { parent: id });
+        }
+
+
+    </script>
+    <script>
+        kamaDatepicker('PublishedDate',
+            {
+                buttonsColor: "green",
+                forceFarsiDigits: false,
+                markToday: true,
+                markHolidays: true,
+                gotoToday: true
+            });
+    </script>
+}

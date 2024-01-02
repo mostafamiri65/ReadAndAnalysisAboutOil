@@ -292,6 +292,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
                 if (isSendForSms != null)
                     isSended = true;
                 var site = news.LinkUrl.Split("/");
+
                 EvalutedListDto dto = new EvalutedListDto()
                 {
 
@@ -307,7 +308,8 @@ namespace ReadAndAnalysis.App.Services.Implementations
                     FieldOfUse = _context.FieldOfUse.SingleOrDefaultAsync(s => s.Id == item.FieldOfUseId).Result?.Name,
                     StatisticalSourceId = item.StatisticalSourceId,
                     StatisticalSource = _context.StatisticalSources.SingleOrDefaultAsync(s => s.Id == item.StatisticalSourceId).Result?.Name,
-                    IsSendForSms = isSended
+                    IsSendForSms = isSended,
+                    EvalutedId = item.Id
                 };
                 list.Add(dto);
 
@@ -467,18 +469,25 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task AddToNegativeOilNewsForSend(long newsId, long userId, int typeId)
         {
-
-            NegativeOilNewsForSendingSms negative = new NegativeOilNewsForSendingSms()
+            var isExist = await _context.NegativeOilNewsForSendingSms.SingleOrDefaultAsync(n => n.NewsId == newsId);
+            if (isExist == null)
             {
-                NewsId = newsId,
-                TypeId = typeId,
-                CreatedUserId = GetIpAddress.GetIp(),
-                CreatedBy = userId,
-                CreatedDate = DateTime.Now
-            };
-            await _context.NegativeOilNewsForSendingSms.AddAsync(negative);
-            await _context.SaveChangesAsync();
+                NegativeOilNewsForSendingSms negative = new NegativeOilNewsForSendingSms()
+                {
+                    NewsId = newsId,
+                    TypeId = typeId,
+                    CreatedUserId = GetIpAddress.GetIp(),
+                    CreatedBy = userId,
+                    CreatedDate = DateTime.Now,
+                    SendedLevel = 0,
+                    UniqueCode = Guid.NewGuid().ToString().Replace("-", "").Remove(6)
+                };
+                await _context.NegativeOilNewsForSendingSms.AddAsync(negative);
+                await _context.SaveChangesAsync();
+            }
         }
+
+
 
         public async Task<bool> SendingSms()
         {
@@ -506,7 +515,218 @@ namespace ReadAndAnalysis.App.Services.Implementations
 
         public async Task<List<SendingSmsType>> GetSendingSmsTypes()
         {
-          return await _context.SendingSmsTypes.ToListAsync();
+            return await _context.SendingSmsTypes.ToListAsync();
+        }
+
+        public async Task<List<SelectedNewsDto>> GetSelectedNewsTypes()
+        {
+
+            var negativeList = await _context.NegativeOilNewsForSendingSms.Where(
+                n => n.SendedLevel == 0).ToListAsync();
+            List<SelectedNewsDto> list = new List<SelectedNewsDto>();
+            foreach (var negative in negativeList)
+            {
+                var typeTi = await _context.SendingSmsTypes.SingleAsync(n => n.Id == negative.TypeId);
+                var news = await _context.NewsRssReeds.SingleAsync(n => n.Id == negative.NewsId);
+                var dto = new SelectedNewsDto()
+                {
+                    Description = news.Description,
+                    Id = negative.Id,
+                    NewsId = news.Id,
+                    PublishedDate = news.PublishedDate,
+                    Title = news.Title,
+                    TypeId = negative.TypeId,
+                    Url = news.LinkUrl,
+                    SendLevelId = negative.SendedLevel,
+                    TypeTitle = typeTi.Title,
+                    LinkeGenerated = "http://2.181.250.24:7686/News/SNK?key=" + negative.UniqueCode
+                };
+                list.Add(dto);
+            }
+            return list;
+        }
+
+        public async Task SendNextLevel(long negativeSmsId, long userId)
+        {
+            var negative = await _context.NegativeOilNewsForSendingSms.SingleAsync(n => n.Id == negativeSmsId);
+            negative.SendedLevel = 1;
+            negative.UserSendId = userId;
+            negative.SendDate = DateTime.Now;
+            _context.NegativeOilNewsForSendingSms.Update(negative);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ViewWithNoAction(long negativeSmsId, long userId)
+        {
+            var negative = await _context.NegativeOilNewsForSendingSms.SingleAsync(n => n.Id == negativeSmsId);
+            negative.SendedLevel = 2;
+            negative.UserSendId = userId;
+            negative.SendDate = DateTime.Now;
+            _context.NegativeOilNewsForSendingSms.Update(negative);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SendNextLevelWithUrl(string key)
+        {
+            var res = await _context.NegativeOilNewsForSendingSms.SingleOrDefaultAsync(r =>
+            r.SendedLevel == 0 && r.UniqueCode == key);
+            if (res != null)
+            {
+                res.SendedLevel = 1;
+                res.SendDate = DateTime.Now;
+                _context.NegativeOilNewsForSendingSms.Update(res);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task CreateNewsAsPrivateMode(CreateNewsAsPrivateDto create, long userId)
+        {
+            NewsRssReed news = new NewsRssReed()
+            {
+                Title = create.Title,
+                Description = create.Description,
+                PublishedDate = create.PublishedDate,
+                LinkUrl = create.LinkUrl,
+                CreateBy = userId,
+                CreateDate = DateTime.Now,
+                CreateIp = GetIpAddress.GetIp(),
+                NewsSourceDetailId = 52,
+                IsOil = true,
+                ProcDate = DateTime.Now,
+
+            };
+            await _context.NewsRssReeds.AddAsync(news);
+            await _context.SaveChangesAsync();
+            EvaluatedResult eva = new EvaluatedResult()
+            {
+                FieldOfUseId = create.FieldOfUseId,
+                EstimateId = create.EstimateId,
+                RelevanceId = create.RelevanceId,
+                StatisticalSourceId = create.StatisticalSourceId,
+                NewsId = news.Id,
+                CreateDate = DateTime.Now,
+                UserId = userId
+            };
+            await _context.EvaluatedResults.AddAsync(eva);
+            await _context.SaveChangesAsync();
+            NegativeOilNewsForSendingSms negative = new NegativeOilNewsForSendingSms()
+            {
+                NewsId = news.Id,
+                CreatedBy = userId,
+                CreatedDate = DateTime.Now,
+                CreatedUserId = GetIpAddress.GetIp(),
+                SendedLevel = 0,
+                TypeId = create.TypeId,
+                UniqueCode = Guid.NewGuid().ToString().Replace("-", "").Remove(6)
+            };
+            await _context.NegativeOilNewsForSendingSms.AddAsync(negative);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<OilNewsDto>> GetLikeNews(long newsId)
+        {
+            List<OilNewsDto> list = new List<OilNewsDto>();
+            var news = await _context.NewsLikes.Where(n => n.NewsId == newsId &&
+            n.IsDelete == 0).ToListAsync();
+            foreach (var item in news)
+            {
+                var itemNews = await _context.NewsRssReeds.SingleAsync(n => n.Id == item.NewsLinkeId);
+                OilNewsDto dto = new OilNewsDto()
+                {
+                    Author = itemNews.Author,
+                    Category = itemNews.Category,
+                    Description = itemNews.Description,
+                    Enclosure = itemNews.Enclosure,
+                    Id = item.Id,
+                    LinkUrl = itemNews.LinkUrl,
+                    PublishedDate = itemNews.PublishedDate,
+                    Title = itemNews.Title
+                };
+                list.Add(dto);
+            }
+            return list;
+
+        }
+
+        public async Task UpdateLikeNews(long newsId, List<long> likesIds, long userId)
+        {
+            var evaluated = await _context.EvaluatedResults.FirstOrDefaultAsync(f => f.NewsId == newsId);
+
+            var likesIdDb = await _context.NewsLikes.Where(n => n.NewsId == newsId).Select(n => n.Id).ToListAsync();
+            List<long> unLikes = new List<long>();
+            foreach (var item in likesIdDb)
+            {
+                if (!likesIds.Contains(item))
+                    unLikes.Add(item);
+            }
+            foreach (var id in unLikes)
+            {
+                var likes = await _context.NewsLikes.SingleAsync(n => n.Id == id);
+                likes.IsDelete = 1;
+                likes.ModifiedIp = GetIpAddress.GetIp();
+                likes.LastModifiedDate = DateTime.Now;
+                likes.UserModifiedId = userId;
+                _context.NewsLikes.Update(likes);
+
+                await _context.SaveChangesAsync();
+            }
+
+
+            var LastLikes = await _context.NewsLikes.Where(n => n.NewsId == newsId && n.IsDelete == 0).ToListAsync();
+            foreach (var item in LastLikes)
+            {
+                var likes = await _context.NewsLikes.SingleAsync(n => n.Id == item.Id);
+                var isExist = await _context.EvaluatedResults.SingleOrDefaultAsync(n => n.NewsId == likes.NewsLinkeId);
+                if (isExist == null)
+                {
+                    EvaluatedResult eva = new EvaluatedResult()
+                    {
+                        NewsId = likes.NewsLinkeId,
+                        CreateDate = DateTime.Now,
+                        EstimateId = evaluated.EstimateId,
+                        FieldOfUseId = evaluated.FieldOfUseId,
+                        RelevanceId = evaluated.RelevanceId,
+                        StatisticalSourceId = evaluated.StatisticalSourceId,
+                        UserId = userId
+                    };
+                    await _context.EvaluatedResults.AddAsync(eva);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+
+        }
+
+        public async Task<OilNewsDto> GetNewsByKey(string key)
+        {
+            var res = await _context.NegativeOilNewsForSendingSms.SingleOrDefaultAsync(r =>
+           r.UniqueCode == key);
+            if (res == null)
+                return new OilNewsDto();
+            var newsId = res.NewsId;
+            var news = await _context.NewsRssReeds.SingleAsync(n=>n.Id == newsId);
+            OilNewsDto newsDto = new OilNewsDto()
+            {
+                Author = news.Author,
+                Category = news.Category,
+                Description = news.Description,
+                Enclosure = news.Enclosure,
+                Id = news.Id,
+                LinkUrl = news.LinkUrl,
+                PublishedDate = news.PublishedDate,
+                Title = news.Title
+            };
+            return newsDto;
+        }
+
+        public async Task<bool> IsNewsSendedSms(string key)
+        {
+            var res = await _context.NegativeOilNewsForSendingSms.SingleOrDefaultAsync(r =>
+           r.UniqueCode == key);
+            if (res == null) return false;
+            if(res.SendedLevel == 0) return true;
+
+            return false;
         }
     }
 }

@@ -22,6 +22,10 @@ namespace ReadAndAnalysis.Web.Controllers
 
         public async Task<IActionResult> Index(string? start, string? end, int? relevanceId)
         {
+            var isPrivate = await _homeService.IsPrivateUser(User.GetUserId());
+            ViewBag.IsPrivate = isPrivate;
+            bool isRavabet = await _homeService.IsRavabetOmoomi(User.GetUserId());
+            bool canSend = false;
             var isSecrotary = await _homeService.IsSecretory(User.GetUserId());
             if (isSecrotary)
             {
@@ -30,8 +34,13 @@ namespace ReadAndAnalysis.Web.Controllers
 
             var boss = await _homeService.IsBoss(User.GetUserId());
             ViewBag.IsBoss = boss;
-            if (boss)
+            if (isRavabet)
             {
+                canSend = true;
+            }
+                ViewBag.CanSend = canSend;
+            
+            
 
                 var relevances = await _homeService.GetNewsRelevance();
 
@@ -59,7 +68,7 @@ namespace ReadAndAnalysis.Web.Controllers
 
                 ViewData["HomeIndex"] = dto;
 
-            }
+            
             var sp = await _homeService.GetDataFromSp();
             var count = await _homeService.GetAllNewsCount();
             ViewBag.Count = count;

@@ -45,7 +45,7 @@ namespace ReadAndAnalysis.App.Services.Implementations
                 var splited = dte.Split("-");
                 var date = splited[0] + "-" + splited[1] + "-" + splited[2].Remove(2);
                 var time = splited[2].Remove(0, 3);
-                var spDate = Convert.ToDateTime(date + " " + time);
+                //var spDate = Convert.ToDateTime(date + " " + time);
                 TestSpDto dto = new TestSpDto()
                 {
                     ShownDate = item["dte"].ToString(),
@@ -136,6 +136,20 @@ namespace ReadAndAnalysis.App.Services.Implementations
                 if (userRoles.Contains(boss.Id))
                     return true;
             }
+            return false;
+        }
+
+        public async Task<bool> IsPrivateUser(long userId)
+        {
+           var user = await _context.TbUsers.SingleAsync(u=>u.Id == userId);
+            return user.IsPrivateInList;
+        }
+
+        public async Task<bool> IsRavabetOmoomi(long userId)
+        {
+            var userRoles = await _context.TbUserRoles.Where(u => u.UserId == userId)
+               .Select(u => u.RoleId).ToListAsync();
+            if(userRoles.Contains(2)) return true;
             return false;
         }
 

@@ -1,0 +1,59 @@
+﻿@model OilNewsDto
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ارسال خبر</title>
+    <partial name="_AdminCss" />
+</head>
+<body dir="rtl">
+    @if (@ViewBag.IsSend)
+    {            
+    <div class="container">
+        <div class="p-2 col-12">
+            <p>
+                    <span class="fw-bold">عنوان خبر:</span> @Model.Title
+            </p>
+        </div>
+        <div class="col-12">
+            @Model.Description
+        </div>
+        <div class="col-4">
+            <a href="@Model.LinkUrl" class="btn btn-primary" target="_blank">رفتن به صفحه خبر</a>
+        </div>
+        <div class="mt-5 p-5">
+          <form asp-action="SNK" method="post">
+                <input type="hidden" value="@ViewBag.Key" name="key" />
+                <div class="alert alert-info">
+                    <div class="col-lg-4 col-md-12">
+                            <label>آیا به مقام بالا پیام ارسال شود ؟</label>
+                            <select class="col-3 form-select" name="type">
+                                <option value="0">انتخاب کنید</option>
+                                <option value="1">بله ارسال شود</option>
+                                <option value="2">خیر فعلا ارسال نشود</option>
+                            </select>
+                    </div>
+                
+                </div>
+                <div class="col-4 offset-4 d-grid gap-2">
+                    <input type="submit" value="ارسال" class="btn btn-secondary" />
+                </div>
+          </form>
+        </div>
+        </div>
+    }
+    else
+    {
+         <div class="container">
+             <div class="mt-5 alert alert-primary">
+                 <h2>این خبر قبلا پردازش شده است</h2>
+             </div>
+        </div>
+    }
+</body>
+</html>

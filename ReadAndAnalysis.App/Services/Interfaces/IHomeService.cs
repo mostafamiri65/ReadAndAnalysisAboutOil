@@ -24,5 +24,7 @@ namespace ReadAndAnalysis.App.Services.Interfaces
         Task<int> GetEvaluatedNewsByBoos(string? startDate, string? endDate, int? relevanceId);
         Task<List<NewsRelevance>> GetNewsRelevance();
         Task<string> GetRelevanceTitleById(int relevanceId);
+        Task<bool> IsRavabetOmoomi(long userId);
+        Task<bool> IsPrivateUser(long userId);
     }
 }

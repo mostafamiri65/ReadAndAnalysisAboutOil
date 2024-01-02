@@ -24,6 +24,7 @@ public partial class TbUser
     public DateTime? ModifiedDate { get; set; }
 
     public long? ModifiedBy { get; set; }
+    public bool IsPrivateInList { get; set; } = false;
 
     public string? ModifiedIp { get; set; }
 
