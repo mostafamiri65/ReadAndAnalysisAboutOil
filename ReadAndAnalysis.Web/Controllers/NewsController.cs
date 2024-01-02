@@ -214,6 +214,7 @@ namespace ReadAndAnalysis.Web.Controllers
             }
             return RedirectToAction("ShowOilNews");
         }
+
         [AllowAnonymous]
 
         public async Task<IActionResult> SNK(string key)
